@@ -1,0 +1,380 @@
+.dashboard-container {
+  width: 100%;
+  height: 100vh;
+  max-height: 100vh;
+  /* Deep corporate navy with subtle vignette */
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.20), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.20), transparent 55%),
+    linear-gradient(135deg, #020617 0%, #0b1220 40%, #020617 100%);
+  padding: 2vh 2vw;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.8s ease-in;
+  box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.45);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 1vh;
+  padding-bottom: 1vh;
+  border-bottom: 3px solid rgba(99, 102, 241, 0.5);
+  flex-shrink: 0;
+}
+
+.dashboard-header h1 {
+  font-size: clamp(1.8rem, 3.3vw, 3rem);
+  background: linear-gradient(120deg, #e5f2ff 0%, #ffffff 40%, #e0f2fe 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.2vh;
+  font-weight: 800;
+  text-shadow: 0 4px 18px rgba(15, 23, 42, 0.9);
+  letter-spacing: 1px;
+}
+
+.last-updated {
+  font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+  color: #94a3b8;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 1.5vh 1.5vw;
+  height: calc(100vh - 12vh);
+  flex: 1;
+  min-height: 0;
+}
+
+.dashboard-card {
+  background: radial-gradient(circle at top left, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%);
+  border-radius: 14px;
+  padding: 1.5vh 1.5vw;
+  box-shadow:
+    0 18px 45px rgba(15, 23, 42, 0.55),
+    0 0 0 1px rgba(148, 163, 184, 0.25);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 
+              0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.dashboard-card h2 {
+  font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+  color: #0f172a;
+  margin-bottom: 1vh;
+  font-weight: 700;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 0.8vh;
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+}
+
+/* Transactions Card - Takes left column, full height */
+.transactions-card {
+  grid-column: 1;
+  grid-row: 1 / -1;
+  display: flex;
+  flex-direction: column;
+}
+
+.transactions-list {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4vh;
+  padding-right: 0.5vw;
+  min-height: 0;
+}
+
+.transaction-item {
+  padding: 0.55vh 1vw;
+  background: linear-gradient(135deg, #f9fafb 0%, #e5edf9 55%, #dbeafe 100%);
+  border-radius: 7px;
+  border-left: 4px solid #6366f1;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.transaction-item:hover {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  border-left-color: #4f46e5;
+  transform: translateX(3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Error / zero-amount transaction */
+.transaction-item-error {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 50%, #fecaca 100%);
+  border-left-color: #dc2626;
+}
+
+.transaction-item-error .transaction-amount {
+  color: #b91c1c;
+}
+
+.transaction-info {
+  display: grid;
+  grid-template-columns: 1.3fr 0.9fr 1fr 0.9fr;
+  gap: 0.7vw;
+  align-items: center;
+  font-size: clamp(0.78rem, 0.95vw, 0.9rem);
+}
+
+.terminal-id {
+  font-weight: 700;
+  color: #6366f1;
+  font-size: clamp(0.82rem, 1.05vw, 1rem);
+  letter-spacing: 0.5px;
+}
+
+.transaction-id {
+  color: #64748b;
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  font-size: clamp(0.75rem, 0.9vw, 0.9rem);
+}
+
+.transaction-amount {
+  font-weight: 700;
+  color: #0f172a;
+  font-size: clamp(0.82rem, 1.05vw, 1rem);
+  text-align: right;
+  letter-spacing: 0.3px;
+}
+
+.transaction-time {
+  color: #64748b;
+  text-align: right;
+  font-size: clamp(0.7rem, 0.85vw, 0.85rem);
+  font-weight: 500;
+}
+
+.no-data {
+  text-align: center;
+  padding: 4vh;
+  color: #94a3b8;
+  font-size: clamp(1rem, 1.3vw, 1.2rem);
+}
+
+/* Statistics Cards */
+.stats-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: radial-gradient(circle at top left, rgba(239, 246, 255, 1) 0%, #eff6ff 40%, #e2e8f0 100%);
+}
+
+.stat-value {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  background: linear-gradient(135deg, #2563eb 0%, #38bdf8 35%, #0ea5e9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 1vh 0;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+.stat-value.currency {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+}
+
+.stat-label {
+  font-size: clamp(0.85rem, 1.2vw, 1rem);
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 0.5vh;
+}
+
+/* Achievement Card */
+.achievement-card {
+  grid-column: 2 / -1;
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.achievement-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2vh;
+  height: 100%;
+  justify-content: center;
+}
+
+.achievement-percentage {
+  font-size: clamp(3rem, 6vw, 5rem);
+  font-weight: 900;
+  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  letter-spacing: -2px;
+  text-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 5vh;
+  background: #e2e8f0;
+  border-radius: 25px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid rgba(226, 232, 240, 0.5);
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 25px;
+  transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2),
+              inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  animation: progressAnimation 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.3) 50%, 
+    transparent 100%);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes progressAnimation {
+  from {
+    width: 0%;
+  }
+}
+
+.achievement-details {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+  color: #475569;
+  font-weight: 700;
+  gap: 2vw;
+}
+
+.achievement-details span {
+  padding: 0.8vh 1.5vw;
+  background: rgba(241, 245, 249, 0.8);
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+/* Responsive adjustments for LCD displays */
+@media (max-width: 1920px) {
+  .dashboard-grid {
+    gap: 1.2vh 1.2vw;
+  }
+}
+
+@media (max-width: 1600px) {
+  .dashboard-grid {
+    grid-template-columns: 1.8fr 1fr 1fr 1fr;
+  }
+}
+
+@media (max-width: 1400px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+  }
+  
+  .transactions-card {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    max-height: 55vh;
+  }
+  
+  .achievement-card {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+  
+  .stat-value {
+    font-size: clamp(2rem, 4vw, 3rem);
+  }
+  
+  .stat-value.currency {
+    font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 1vh 1vw;
+  }
+  
+  .dashboard-header h1 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+  }
+  
+  .transaction-info {
+    grid-template-columns: 1fr;
+    gap: 0.5vh;
+    text-align: left;
+  }
+  
+  .transaction-amount,
+  .transaction-time {
+    text-align: left;
+  }
+  
+  .stat-value {
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+  }
+  
+  .achievement-percentage {
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+  }
+}
+
