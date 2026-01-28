@@ -60,7 +60,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
               <h1 className="text-base sm:text-md md:text-xl lg:text-2xl font-semibold tracking-wide text-slate-100 truncate">
                 Daily Performance Dashboard
               </h1>
-              <p className="mt-0.5 text-[11px] md:text-xs text-slate-400 font-medium truncate">
+              <p className="mt-0.5 text-[11px] md:text-xs text-slate-100 font-medium truncate">
                 Live operational view • Optimized for large displays
               </p>
             </div>
@@ -111,7 +111,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
             <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 p-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">
+                  <p className="text-[11px] uppercase tracking-[0.22em] text-slate-100">
                     Total transactions
                   </p>
                   <p className="mt-0.5 text-xs text-slate-500">Today</p>
@@ -145,7 +145,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
             <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 p-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">
+                  <p className="text-[11px] uppercase tracking-[0.22em] text-slate-100">
                     Today&apos;s turnover
                   </p>
                   <p className="mt-0.5 text-xs text-slate-500">Realized volume</p>
@@ -179,7 +179,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
             <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 p-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">
+                  <p className="text-[11px] uppercase tracking-[0.22em] text-slate-100">
                     Month target
                   </p>
                   <p className="mt-0.5 text-xs text-slate-500">Planned volume</p>
@@ -208,7 +208,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
             <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 p-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">
+                  <p className="text-[11px] uppercase tracking-[0.22em] text-slate-100">
                     Transaction target
                   </p>
                   <p className="mt-0.5 text-xs text-slate-500">Static</p>
