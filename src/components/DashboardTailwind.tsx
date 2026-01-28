@@ -57,7 +57,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
               </svg>
             </div>
             <div>
-              <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold tracking-wide text-slate-100 truncate">
+              <h1 className="text-base sm:text-md md:text-xl lg:text-2xl font-semibold tracking-wide text-slate-100 truncate">
                 Daily Performance Dashboard
               </h1>
               <p className="mt-0.5 text-[11px] md:text-xs text-slate-400 font-medium truncate">

@@ -44,6 +44,7 @@
   letter-spacing: 1px;
 }
 
+
 .last-updated {
   font-size: clamp(0.9rem, 1.2vw, 1.1rem);
   color: #94a3b8;
