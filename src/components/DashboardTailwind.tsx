@@ -34,8 +34,8 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
   const dash = (pct / 100) * c;
 
   return (
-    <div className="w-screen h-screen bg-slate-950 text-slate-100 overflow-hidden">
-      <div className="w-full h-full max-w-[1600px] mx-auto px-3 py-3 sm:px-5 sm:py-4 lg:px-8 lg:py-6 flex flex-col">
+    <div className="w-screen min-h-[100dvh] lg:h-screen bg-slate-950 text-slate-100 overflow-x-hidden overflow-y-auto lg:overflow-y-hidden">
+      <div className="w-full min-h-[100dvh] lg:h-full max-w-[1600px] mx-auto px-3 py-3 sm:px-5 sm:py-4 lg:px-8 lg:py-6 flex flex-col">
         {/* Header */}
         <header className="mb-3 sm:mb-4 flex items-center justify-between">
           <div className="flex items-center gap-3 min-w-0">
@@ -106,7 +106,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
 
         <main className="flex-1 min-h-0 flex flex-col gap-3 sm:gap-4 pb-2">
           {/* KPI Row */}
-          <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <section className="grid grid-cols-2 max-[420px]:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {/* KPI: Total Transactions */}
             <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 p-4">
               <div className="flex items-start justify-between gap-3">
