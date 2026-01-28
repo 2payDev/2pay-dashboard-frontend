@@ -38,7 +38,7 @@ const Dashboard: React.FC<DashboardProps> = ({ data }) => {
       <div className="dashboard-grid">
         {/* Last 10 Transactions */}
         <div className="dashboard-card transactions-card">
-          <h2>Last 10 Transactions</h2>
+          <h2>Latest Transactions</h2>
           <div className="transactions-list">
             {data.last_transactions.length > 0 ? (
               data.last_transactions.map((transaction, index) => {
@@ -54,7 +54,7 @@ const Dashboard: React.FC<DashboardProps> = ({ data }) => {
                     </span>
                     <span className="transaction-id">{transaction.transaction_id}</span>
                     <span className="transaction-amount">
-                      {formatCurrency(transaction.amount)}
+                      {transaction.amount === 0 ? 'ERROR' : formatCurrency(transaction.amount)}
                     </span>
                     <span className="transaction-time">
                       {formatTime(transaction.timestamp)}

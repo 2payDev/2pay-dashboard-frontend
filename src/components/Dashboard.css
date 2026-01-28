@@ -136,6 +136,7 @@
 
 .transaction-item-error .transaction-amount {
   color: #b91c1c;
+  letter-spacing: 1px;
 }
 
 .transaction-info {
@@ -224,6 +225,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  overflow: hidden;
 }
 
 .achievement-content {
@@ -323,6 +325,30 @@
   }
 }
 
+/* Tablet */
+@media (max-width: 1024px) {
+  .dashboard-container {
+    padding: 1.5vh 3vw;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    height: auto;
+    gap: 14px;
+  }
+
+  .transactions-card {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  .achievement-card {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+}
+
 @media (max-width: 1400px) {
   .dashboard-grid {
     grid-template-columns: 1fr 1fr;
@@ -349,32 +375,151 @@
   }
 }
 
+/* Mobile */
 @media (max-width: 768px) {
   .dashboard-container {
-    padding: 1vh 1vw;
+    padding: 10px;
   }
   
   .dashboard-header h1 {
-    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-size: 1.6rem;
   }
   
-  .transaction-info {
+  .dashboard-grid {
     grid-template-columns: 1fr;
-    gap: 0.5vh;
-    text-align: left;
+    grid-template-rows: auto;
+    height: auto;
+    gap: 12px;
+  }
+
+  .transactions-card {
+    grid-column: 1;
+    grid-row: auto;
+    max-height: 48vh;
+  }
+
+  .stats-card {
+    min-height: 120px;
+  }
+
+  .achievement-card {
+    grid-column: 1;
+    grid-row: auto;
+    max-width: 100%;
+  }
+
+  .dashboard-card {
+    padding: 10px;
+    border-radius: 12px;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .dashboard-card h2 {
+    font-size: 1.05rem;
+  }
+
+  /* Allow vertical scroll for last 10 transactions on mobile */
+  .transactions-list {
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .transactions-list::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .transactions-list::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.7);
+    border-radius: 999px;
+  }
+
+  .transaction-info {
+    /* Reflow: terminal on first line, id/amount/time on second line */
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "terminal terminal"
+      "id amount"
+      "time time";
+    gap: 6px 10px;
+    align-items: start;
   }
   
-  .transaction-amount,
+  .terminal-id {
+    grid-area: terminal;
+    font-size: 0.95rem;
+    line-height: 1.2;
+  }
+
+  .transaction-id {
+    grid-area: id;
+    font-size: 0.8rem;
+  }
+
+  .transaction-amount {
+    grid-area: amount;
+    text-align: right;
+    font-size: 0.9rem;
+  }
+
   .transaction-time {
+    grid-area: time;
     text-align: left;
+    font-size: 0.75rem;
   }
   
   .stat-value {
-    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-size: 2.2rem;
   }
   
   .achievement-percentage {
-    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    font-size: 2.4rem;
+  }
+
+  .progress-bar-container {
+    height: 18px;
+  }
+
+  .achievement-details {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .achievement-details span {
+    text-align: center;
+    font-size: 0.85rem;
+    padding: 6px 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 480px) {
+  .dashboard-header h1 {
+    font-size: 1.4rem;
+  }
+
+  .last-updated {
+    font-size: 0.8rem;
+  }
+
+  .stat-value {
+    font-size: 1.9rem;
+  }
+
+  .stat-value.currency {
+    font-size: 1.7rem;
+  }
+
+  .achievement-percentage {
+    font-size: 2.1rem;
+  }
+
+  .achievement-details span {
+    font-size: 0.8rem;
   }
 }
 
