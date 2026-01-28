@@ -523,3 +523,71 @@
   }
 }
 
+/* =============================
+   Force desktop layout (TV / LCD)
+   Enabled by adding 'force-desktop-layout' class to <body>
+   via ?layout=desktop or ?tv=1 in the URL
+   ============================= */
+
+.force-desktop-layout .dashboard-container {
+  padding: 2vh 2vw;
+}
+
+.force-desktop-layout .dashboard-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 1.5vh 1.5vw;
+  height: calc(100vh - 12vh);
+}
+
+.force-desktop-layout .transactions-card {
+  grid-column: 1;
+  grid-row: 1 / -1;
+  max-height: none;
+}
+
+.force-desktop-layout .transactions-list {
+  overflow: hidden;
+}
+
+.force-desktop-layout .achievement-card {
+  grid-column: 2 / -1;
+  grid-row: 2;
+}
+
+.force-desktop-layout .dashboard-card {
+  padding: 1.5vh 1.5vw;
+  border-radius: 14px;
+}
+
+.force-desktop-layout .dashboard-card h2 {
+  font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+}
+
+.force-desktop-layout .dashboard-header h1 {
+  font-size: clamp(1.8rem, 3.3vw, 3rem);
+}
+
+.force-desktop-layout .stat-value {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+}
+
+.force-desktop-layout .stat-value.currency {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+}
+
+.force-desktop-layout .achievement-percentage {
+  font-size: clamp(3rem, 6vw, 5rem);
+}
+
+.force-desktop-layout .achievement-details {
+  flex-direction: row;
+  gap: 2vw;
+}
+
+.force-desktop-layout .achievement-details span {
+  white-space: nowrap;
+  font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+}
+

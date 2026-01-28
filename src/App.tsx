@@ -34,6 +34,21 @@ const App: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Force desktop layout (for LCD / TV screens) when ?layout=desktop or ?tv=1 is in URL
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const params = new URLSearchParams(window.location.search);
+    const forceDesktop =
+      params.get('layout') === 'desktop' || params.get('tv') === '1';
+
+    if (forceDesktop) {
+      document.body.classList.add('force-desktop-layout');
+    } else {
+      document.body.classList.remove('force-desktop-layout');
+    }
+  }, []);
+
   if (loading && !data) {
     return (
       <div className="loading-container">
