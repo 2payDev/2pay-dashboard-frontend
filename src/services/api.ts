@@ -14,6 +14,7 @@ export interface DashboardData {
   total_transactions_today: number;
   today_turnover: number;
   turnover_till_date: number;
+  transactions_mtd: number;
   target_till_date: number;
   target_achievement_percentage: number;
 }

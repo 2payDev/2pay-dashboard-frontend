@@ -326,30 +326,68 @@
 }
 
 /* Tablet */
-@media (max-width: 1024px) {
+@media (max-width: 900px) {
   .dashboard-container {
-    padding: 1.5vh 3vw;
+    padding: 16px;
   }
 
-  .dashboard-grid {
+  /* Header */
+  .dashboard-title {
+    font-size: 20px;
+    text-align: center;
+  }
+
+  .last-updated {
+    font-size: 12px;
+    text-align: center;
+  }
+
+  /* Cards layout */
+  .stats-grid {
+    display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto auto;
-    height: auto;
-    gap: 14px;
+    gap: 12px;
   }
 
+  /* Latest Transactions */
   .transactions-card {
-    grid-column: 1 / -1;
-    grid-row: 1;
+    width: 100%;
+    overflow-x: auto;
   }
 
-  .achievement-card {
-    grid-column: 1 / -1;
-    grid-row: 3;
+  .transaction-row {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  /* Big numbers */
+  .stat-value {
+    font-size: 26px;
+  }
+
+  /* Target section */
+  .target-card {
+    padding: 16px;
+  }
+
+  .target-percentage {
+    font-size: 28px;
+  }
+
+  .progress-bar {
+    height: 14px;
+  }
+
+  /* Month target card */
+  .month-target {
+    margin-top: 12px;
+    font-size: 20px;
+    text-align: center;
   }
 }
 
-@media (max-width: 1400px) {
+
+@media (max-width: 1200px) {
   .dashboard-grid {
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto auto;
@@ -589,5 +627,90 @@
 .force-desktop-layout .achievement-details span {
   white-space: nowrap;
   font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+}
+
+/* =============================
+   Fixed desktop layout for 32\" / laptop screens
+   (width & height both matched)
+   Example: 1366x768, 1920x1080
+   ============================= */
+@media (min-width: 1360px) and (min-height: 720px) {
+  .dashboard-container {
+    padding: 2vh 2vw;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    height: calc(100vh - 12vh);
+    gap: 1.5vh 1.5vw;
+  }
+
+  .transactions-card {
+    grid-column: 1;
+    grid-row: 1 / -1;
+    max-height: none;
+  }
+
+  .transactions-list {
+    overflow: hidden;
+  }
+
+  .achievement-card {
+    grid-column: 2 / -1;
+    grid-row: 2;
+  }
+
+  .dashboard-card {
+    padding: 1.5vh 1.5vw;
+    border-radius: 14px;
+  }
+
+  .dashboard-card h2 {
+    font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+  }
+
+  .stat-value {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .stat-value.currency {
+    font-size: clamp(2rem, 4vw, 3.2rem);
+  }
+
+  .achievement-percentage {
+    font-size: clamp(3rem, 6vw, 5rem);
+  }
+
+  .achievement-details {
+    flex-direction: row;
+    gap: 2vw;
+  }
+}
+
+/* Specific layout for approx 858 x 762 viewport (DevTools / some TVs)
+   Force full desktop-style grid instead of tablet stacking */
+@media (min-width: 840px) and (max-width: 880px) and (min-height: 740px) and (max-height: 780px) {
+  .dashboard-grid {
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    height: calc(100vh - 12vh);
+    gap: 1.5vh 1.5vw;
+  }
+
+  .transactions-card {
+    grid-column: 1;
+    grid-row: 1 / -1;
+    max-height: none;
+  }
+
+  .transactions-list {
+    overflow: hidden;
+  }
+
+  .achievement-card {
+    grid-column: 2 / -1;
+    grid-row: 2;
+  }
 }
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import Dashboard from './components/Dashboard';
+import DashboardTailwind from './components/DashboardTailwind';
 import { fetchDashboardData, DashboardData } from './services/api';
 
 const App: React.FC = () => {
@@ -71,7 +71,7 @@ const App: React.FC = () => {
   return (
     <div className="App">
       {data ? (
-        <Dashboard data={data} />
+        <DashboardTailwind data={data} />
       ) : (
         <div className="loading-container">
           <p>No data available</p>
