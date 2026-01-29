@@ -105,6 +105,156 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
         </header>
 
         <main className="flex-1 min-h-0 flex flex-col gap-3 sm:gap-4 pb-2">
+          {/* Target Achievement (top on mobile only) */}
+          <section className="sm:hidden rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 overflow-hidden flex flex-col">
+            <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+              <div>
+                <h2 className="text-sm md:text-base font-semibold text-slate-100">
+                  Target Achievement
+                </h2>
+                <p className="text-[11px] text-slate-500">Month to date</p>
+              </div>
+              <span className="text-[11px] font-semibold px-2 py-1 rounded-full bg-white/5 ring-1 ring-white/10 text-slate-300">
+                MTD
+              </span>
+            </div>
+
+            <div className="p-4 flex flex-col gap-4">
+              {/* Dual circles: turnover + transactions */}
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                {/* Turnover circle */}
+                <div className="flex flex-col items-center gap-1">
+                  <div className="relative" style={{ width: circleSize, height: circleSize }}>
+                    <svg width={circleSize} height={circleSize} className="block">
+                      <defs>
+                        <linearGradient id="targetGradTurnoverMobile" x1="0" y1="0" x2="1" y2="1">
+                          <stop offset="0%" stopColor={pct >= 80 ? '#34d399' : pct >= 50 ? '#fbbf24' : '#fb7185'} />
+                          <stop offset="100%" stopColor={pct >= 80 ? '#22c55e' : pct >= 50 ? '#f59e0b' : '#f43f5e'} />
+                        </linearGradient>
+                      </defs>
+                      <circle
+                        cx={circleSize / 2}
+                        cy={circleSize / 2}
+                        r={r}
+                        stroke="rgba(255,255,255,0.10)"
+                        strokeWidth={strokeWidth}
+                        fill="transparent"
+                      />
+                      <circle
+                        cx={circleSize / 2}
+                        cy={circleSize / 2}
+                        r={r}
+                        stroke="url(#targetGradTurnoverMobile)"
+                        strokeWidth={strokeWidth}
+                        strokeLinecap="round"
+                        fill="transparent"
+                        strokeDasharray={`${dash} ${c - dash}`}
+                        transform={`rotate(-90 ${circleSize / 2} ${circleSize / 2})`}
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <p className="text-3xl font-extrabold tracking-tight text-slate-100">
+                        {pct.toFixed(1)}%
+                      </p>
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
+                        Turnover
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Transactions circle */}
+                <div className="flex flex-col items-center gap-1">
+                  <div className="relative" style={{ width: circleSize, height: circleSize }}>
+                    <svg width={circleSize} height={circleSize} className="block">
+                      <defs>
+                        <linearGradient id="targetGradTxnMobile" x1="0" y1="0" x2="1" y2="1">
+                          <stop offset="0%" stopColor={transactionPct >= 80 ? '#34d399' : transactionPct >= 50 ? '#fbbf24' : '#fb7185'} />
+                          <stop offset="100%" stopColor={transactionPct >= 80 ? '#22c55e' : transactionPct >= 50 ? '#f59e0b' : '#f43f5e'} />
+                        </linearGradient>
+                      </defs>
+                      <circle
+                        cx={circleSize / 2}
+                        cy={circleSize / 2}
+                        r={r}
+                        stroke="rgba(255,255,255,0.10)"
+                        strokeWidth={strokeWidth}
+                        fill="transparent"
+                      />
+                      <circle
+                        cx={circleSize / 2}
+                        cy={circleSize / 2}
+                        r={r}
+                        stroke="url(#targetGradTxnMobile)"
+                        strokeWidth={strokeWidth}
+                        strokeLinecap="round"
+                        fill="transparent"
+                        strokeDasharray={`${(transactionPct / 100) * c} ${c - (transactionPct / 100) * c}`}
+                        transform={`rotate(-90 ${circleSize / 2} ${circleSize / 2})`}
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <p className="text-3xl font-extrabold tracking-tight text-slate-100">
+                        {transactionPct.toFixed(1)}%
+                      </p>
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
+                        Transactions
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-3">
+                {/* Turnover achievement */}
+                <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-3 flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
+                        Turnover
+                      </p>
+                      <p className="mt-1 text-sm text-slate-400">
+                        {formatCurrency(data.turnover_till_date)} / {formatCurrency(data.target_till_date)}
+                      </p>
+                    </div>
+                    <p className="text-lg font-bold text-slate-100">
+                      {pct.toFixed(1)}%
+                    </p>
+                  </div>
+                  <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(pct)}`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Transactions achievement */}
+                <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-3 flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
+                        Transactions
+                      </p>
+                      <p className="mt-1 text-sm text-slate-400">
+                        {data.transactions_mtd.toLocaleString()} / {transactionTarget.toLocaleString()}
+                      </p>
+                    </div>
+                    <p className="text-lg font-bold text-slate-100">
+                      {transactionPct.toFixed(1)}%
+                    </p>
+                  </div>
+                  <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(transactionPct)}`}
+                      style={{ width: `${transactionPct}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
           {/* KPI Row */}
           <section className="grid grid-cols-2 max-[420px]:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {/* KPI: Total Transactions */}
@@ -240,9 +390,9 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
           </section>
 
           {/* Content */}
-          <section className="min-h-0 grid grid-cols-1 xl:grid-cols-12 gap-3 sm:gap-4">
+          <section className="min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4">
             {/* Transactions */}
-            <div className="xl:col-span-8 rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 overflow-hidden flex flex-col min-h-0">
+            <div className="lg:col-span-8 rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 overflow-hidden flex flex-col min-h-0">
               <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="h-9 w-9 rounded-2xl bg-white/5 ring-1 ring-white/10 flex items-center justify-center">
@@ -364,155 +514,305 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
               </div>
             </div>
 
-            {/* Target Panel */}
-            <div className="xl:col-span-4 rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 overflow-hidden flex flex-col min-h-0">
-              <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
-                <div>
-                  <h2 className="text-sm md:text-base font-semibold text-slate-100">
-                    Target Achievement
-                  </h2>
-                  <p className="text-[11px] text-slate-500">Month to date</p>
+            {/* Tablet-only: show Target below transactions (not at top) */}
+            <div className="hidden sm:block lg:hidden">
+              <section className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 overflow-hidden flex flex-col">
+                <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+                  <div>
+                    <h2 className="text-sm md:text-base font-semibold text-slate-100">
+                      Target Achievement
+                    </h2>
+                    <p className="text-[11px] text-slate-500">Month to date</p>
+                  </div>
+                  <span className="text-[11px] font-semibold px-2 py-1 rounded-full bg-white/5 ring-1 ring-white/10 text-slate-300">
+                    MTD
+                  </span>
                 </div>
-                <span className="text-[11px] font-semibold px-2 py-1 rounded-full bg-white/5 ring-1 ring-white/10 text-slate-300">
-                  MTD
-                </span>
-              </div>
 
-              <div className="flex-1 min-h-0 p-4 flex flex-col gap-4">
-                {/* Dual circles: turnover + transactions */}
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                  {/* Turnover circle */}
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="relative" style={{ width: circleSize, height: circleSize }}>
-                      <svg width={circleSize} height={circleSize} className="block">
-                        <defs>
-                          <linearGradient id="targetGradTurnover" x1="0" y1="0" x2="1" y2="1">
-                            <stop offset="0%" stopColor={pct >= 80 ? '#34d399' : pct >= 50 ? '#fbbf24' : '#fb7185'} />
-                            <stop offset="100%" stopColor={pct >= 80 ? '#22c55e' : pct >= 50 ? '#f59e0b' : '#f43f5e'} />
-                          </linearGradient>
-                        </defs>
-                        <circle
-                          cx={circleSize / 2}
-                          cy={circleSize / 2}
-                          r={r}
-                          stroke="rgba(255,255,255,0.10)"
-                          strokeWidth={strokeWidth}
-                          fill="transparent"
-                        />
-                        <circle
-                          cx={circleSize / 2}
-                          cy={circleSize / 2}
-                          r={r}
-                          stroke="url(#targetGradTurnover)"
-                          strokeWidth={strokeWidth}
-                          strokeLinecap="round"
-                          fill="transparent"
-                          strokeDasharray={`${dash} ${c - dash}`}
-                          transform={`rotate(-90 ${circleSize / 2} ${circleSize / 2})`}
-                        />
-                      </svg>
-                      <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <p className="text-3xl font-extrabold tracking-tight text-slate-100">
+                <div className="p-4 flex flex-col gap-4">
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="relative" style={{ width: circleSize, height: circleSize }}>
+                        <svg width={circleSize} height={circleSize} className="block">
+                          <defs>
+                            <linearGradient id="targetGradTurnoverTablet" x1="0" y1="0" x2="1" y2="1">
+                              <stop offset="0%" stopColor={pct >= 80 ? '#34d399' : pct >= 50 ? '#fbbf24' : '#fb7185'} />
+                              <stop offset="100%" stopColor={pct >= 80 ? '#22c55e' : pct >= 50 ? '#f59e0b' : '#f43f5e'} />
+                            </linearGradient>
+                          </defs>
+                          <circle
+                            cx={circleSize / 2}
+                            cy={circleSize / 2}
+                            r={r}
+                            stroke="rgba(255,255,255,0.10)"
+                            strokeWidth={strokeWidth}
+                            fill="transparent"
+                          />
+                          <circle
+                            cx={circleSize / 2}
+                            cy={circleSize / 2}
+                            r={r}
+                            stroke="url(#targetGradTurnoverTablet)"
+                            strokeWidth={strokeWidth}
+                            strokeLinecap="round"
+                            fill="transparent"
+                            strokeDasharray={`${dash} ${c - dash}`}
+                            transform={`rotate(-90 ${circleSize / 2} ${circleSize / 2})`}
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                          <p className="text-3xl font-extrabold tracking-tight text-slate-100">
+                            {pct.toFixed(1)}%
+                          </p>
+                          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
+                            Turnover
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="relative" style={{ width: circleSize, height: circleSize }}>
+                        <svg width={circleSize} height={circleSize} className="block">
+                          <defs>
+                            <linearGradient id="targetGradTxnTablet" x1="0" y1="0" x2="1" y2="1">
+                              <stop offset="0%" stopColor={transactionPct >= 80 ? '#34d399' : transactionPct >= 50 ? '#fbbf24' : '#fb7185'} />
+                              <stop offset="100%" stopColor={transactionPct >= 80 ? '#22c55e' : transactionPct >= 50 ? '#f59e0b' : '#f43f5e'} />
+                            </linearGradient>
+                          </defs>
+                          <circle
+                            cx={circleSize / 2}
+                            cy={circleSize / 2}
+                            r={r}
+                            stroke="rgba(255,255,255,0.10)"
+                            strokeWidth={strokeWidth}
+                            fill="transparent"
+                          />
+                          <circle
+                            cx={circleSize / 2}
+                            cy={circleSize / 2}
+                            r={r}
+                            stroke="url(#targetGradTxnTablet)"
+                            strokeWidth={strokeWidth}
+                            strokeLinecap="round"
+                            fill="transparent"
+                            strokeDasharray={`${(transactionPct / 100) * c} ${c - (transactionPct / 100) * c}`}
+                            transform={`rotate(-90 ${circleSize / 2} ${circleSize / 2})`}
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                          <p className="text-3xl font-extrabold tracking-tight text-slate-100">
+                            {transactionPct.toFixed(1)}%
+                          </p>
+                          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
+                            Transactions
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-3">
+                    <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-3 flex flex-col gap-2">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
+                            Turnover
+                          </p>
+                          <p className="mt-1 text-sm text-slate-400">
+                            {formatCurrency(data.turnover_till_date)} / {formatCurrency(data.target_till_date)}
+                          </p>
+                        </div>
+                        <p className="text-lg font-bold text-slate-100">
                           {pct.toFixed(1)}%
                         </p>
-                        <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
-                          Turnover
-                        </p>
+                      </div>
+                      <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(pct)}`}
+                          style={{ width: `${pct}%` }}
+                        />
                       </div>
                     </div>
-                  </div>
 
-                  {/* Transactions circle */}
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="relative" style={{ width: circleSize, height: circleSize }}>
-                      <svg width={circleSize} height={circleSize} className="block">
-                        <defs>
-                          <linearGradient id="targetGradTxn" x1="0" y1="0" x2="1" y2="1">
-                            <stop offset="0%" stopColor={transactionPct >= 80 ? '#34d399' : transactionPct >= 50 ? '#fbbf24' : '#fb7185'} />
-                            <stop offset="100%" stopColor={transactionPct >= 80 ? '#22c55e' : transactionPct >= 50 ? '#f59e0b' : '#f43f5e'} />
-                          </linearGradient>
-                        </defs>
-                        <circle
-                          cx={circleSize / 2}
-                          cy={circleSize / 2}
-                          r={r}
-                          stroke="rgba(255,255,255,0.10)"
-                          strokeWidth={strokeWidth}
-                          fill="transparent"
-                        />
-                        <circle
-                          cx={circleSize / 2}
-                          cy={circleSize / 2}
-                          r={r}
-                          stroke="url(#targetGradTxn)"
-                          strokeWidth={strokeWidth}
-                          strokeLinecap="round"
-                          fill="transparent"
-                          strokeDasharray={`${(transactionPct / 100) * c} ${c - (transactionPct / 100) * c}`}
-                          transform={`rotate(-90 ${circleSize / 2} ${circleSize / 2})`}
-                        />
-                      </svg>
-                      <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <p className="text-3xl font-extrabold tracking-tight text-slate-100">
+                    <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-3 flex flex-col gap-2">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
+                            Transactions
+                          </p>
+                          <p className="mt-1 text-sm text-slate-400">
+                            {data.transactions_mtd.toLocaleString()} / {transactionTarget.toLocaleString()}
+                          </p>
+                        </div>
+                        <p className="text-lg font-bold text-slate-100">
                           {transactionPct.toFixed(1)}%
                         </p>
-                        <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
-                          Transactions
-                        </p>
+                      </div>
+                      <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(transactionPct)}`}
+                          style={{ width: `${transactionPct}%` }}
+                        />
                       </div>
                     </div>
                   </div>
                 </div>
-
-                <div className="grid grid-cols-1 gap-3">
-                  {/* Turnover achievement */}
-                  <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-3 flex flex-col gap-2">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
-                          Turnover
-                        </p>
-                        <p className="mt-1 text-sm text-slate-400">
-                          {formatCurrency(data.turnover_till_date)} / {formatCurrency(data.target_till_date)}
-                        </p>
-                      </div>
-                      <p className="text-lg font-bold text-slate-100">
-                        {pct.toFixed(1)}%
-                      </p>
-                    </div>
-                    <div className="h-2 rounded-full bg-white/10 overflow-hidden">
-                      <div
-                        className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(pct)}`}
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Transactions achievement */}
-                  <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-3 flex flex-col gap-2">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
-                          Transactions
-                        </p>
-                        <p className="mt-1 text-sm text-slate-400">
-                          {data.transactions_mtd.toLocaleString()} / {transactionTarget.toLocaleString()}
-                        </p>
-                      </div>
-                      <p className="text-lg font-bold text-slate-100">
-                        {transactionPct.toFixed(1)}%
-                      </p>
-                    </div>
-                    <div className="h-2 rounded-full bg-white/10 overflow-hidden">
-                      <div
-                        className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(transactionPct)}`}
-                        style={{ width: `${transactionPct}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
+              </section>
             </div>
+
+            {/* Target Achievement (right side on large screens only) */}
+            <div className="hidden lg:block lg:col-span-4">
+              <section className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 overflow-hidden flex flex-col">
+                <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+                  <div>
+                    <h2 className="text-sm md:text-base font-semibold text-slate-100">
+                      Target Achievement
+                    </h2>
+                    <p className="text-[11px] text-slate-500">Month to date</p>
+                  </div>
+                  <span className="text-[11px] font-semibold px-2 py-1 rounded-full bg-white/5 ring-1 ring-white/10 text-slate-300">
+                    MTD
+                  </span>
+                </div>
+
+                <div className="p-4 flex flex-col gap-4">
+                  {/* Dual circles: turnover + transactions */}
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                    {/* Turnover circle */}
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="relative" style={{ width: circleSize, height: circleSize }}>
+                        <svg width={circleSize} height={circleSize} className="block">
+                          <defs>
+                            <linearGradient id="targetGradTurnoverDesktop" x1="0" y1="0" x2="1" y2="1">
+                              <stop offset="0%" stopColor={pct >= 80 ? '#34d399' : pct >= 50 ? '#fbbf24' : '#fb7185'} />
+                              <stop offset="100%" stopColor={pct >= 80 ? '#22c55e' : pct >= 50 ? '#f59e0b' : '#f43f5e'} />
+                            </linearGradient>
+                          </defs>
+                          <circle
+                            cx={circleSize / 2}
+                            cy={circleSize / 2}
+                            r={r}
+                            stroke="rgba(255,255,255,0.10)"
+                            strokeWidth={strokeWidth}
+                            fill="transparent"
+                          />
+                          <circle
+                            cx={circleSize / 2}
+                            cy={circleSize / 2}
+                            r={r}
+                            stroke="url(#targetGradTurnoverDesktop)"
+                            strokeWidth={strokeWidth}
+                            strokeLinecap="round"
+                            fill="transparent"
+                            strokeDasharray={`${dash} ${c - dash}`}
+                            transform={`rotate(-90 ${circleSize / 2} ${circleSize / 2})`}
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                          <p className="text-3xl font-extrabold tracking-tight text-slate-100">
+                            {pct.toFixed(1)}%
+                          </p>
+                          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
+                            Turnover
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Transactions circle */}
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="relative" style={{ width: circleSize, height: circleSize }}>
+                        <svg width={circleSize} height={circleSize} className="block">
+                          <defs>
+                            <linearGradient id="targetGradTxnDesktop" x1="0" y1="0" x2="1" y2="1">
+                              <stop offset="0%" stopColor={transactionPct >= 80 ? '#34d399' : transactionPct >= 50 ? '#fbbf24' : '#fb7185'} />
+                              <stop offset="100%" stopColor={transactionPct >= 80 ? '#22c55e' : transactionPct >= 50 ? '#f59e0b' : '#f43f5e'} />
+                            </linearGradient>
+                          </defs>
+                          <circle
+                            cx={circleSize / 2}
+                            cy={circleSize / 2}
+                            r={r}
+                            stroke="rgba(255,255,255,0.10)"
+                            strokeWidth={strokeWidth}
+                            fill="transparent"
+                          />
+                          <circle
+                            cx={circleSize / 2}
+                            cy={circleSize / 2}
+                            r={r}
+                            stroke="url(#targetGradTxnDesktop)"
+                            strokeWidth={strokeWidth}
+                            strokeLinecap="round"
+                            fill="transparent"
+                            strokeDasharray={`${(transactionPct / 100) * c} ${c - (transactionPct / 100) * c}`}
+                            transform={`rotate(-90 ${circleSize / 2} ${circleSize / 2})`}
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                          <p className="text-3xl font-extrabold tracking-tight text-slate-100">
+                            {transactionPct.toFixed(1)}%
+                          </p>
+                          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
+                            Transactions
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-3">
+                    {/* Turnover achievement */}
+                    <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-3 flex flex-col gap-2">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
+                            Turnover
+                          </p>
+                          <p className="mt-1 text-sm text-slate-400">
+                            {formatCurrency(data.turnover_till_date)} / {formatCurrency(data.target_till_date)}
+                          </p>
+                        </div>
+                        <p className="text-lg font-bold text-slate-100">
+                          {pct.toFixed(1)}%
+                        </p>
+                      </div>
+                      <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(pct)}`}
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Transactions achievement */}
+                    <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-3 flex flex-col gap-2">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
+                            Transactions
+                          </p>
+                          <p className="mt-1 text-sm text-slate-400">
+                            {data.transactions_mtd.toLocaleString()} / {transactionTarget.toLocaleString()}
+                          </p>
+                        </div>
+                        <p className="text-lg font-bold text-slate-100">
+                          {transactionPct.toFixed(1)}%
+                        </p>
+                      </div>
+                      <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(transactionPct)}`}
+                          style={{ width: `${transactionPct}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+
           </section>
         </main>
       </div>
