@@ -14,7 +14,9 @@ npm install
 cp .env.example .env
 ```
 
-3. Update `.env` with your backend API URL (default: `http://localhost:8000`)
+3. Update `.env` with your backend API URL:
+   - For local dev: `REACT_APP_API_URL=http://localhost:8000`
+   - For Vercel production: set `REACT_APP_API_URL=https://your-backend.vercel.app` in Vercel project settings (not committed in git).
 
 4. Start the development server:
 ```bash
@@ -31,7 +33,12 @@ To build the app for production deployment:
 npm run build
 ```
 
-The build folder will contain the optimized production build.
+The `build` folder will contain the optimized production build, which Vercel or any static web server can serve.
+
+On Vercel:
+- Framework preset: Create React App
+- Build command: `npm run build`
+- Output directory: `build`
 
 ## Features
 
@@ -44,6 +51,6 @@ The build folder will contain the optimized production build.
 ## Configuration
 
 - Auto-refresh interval: Set in `App.tsx` (currently 60000ms = 1 minute)
-- API URL: Configure in `.env` file
-- Styling: Customize in `src/components/Dashboard.css`
+- API URL: Configure via `REACT_APP_API_URL` environment variable
+- Styling: Tailwind-first layout in `DashboardTailwind.tsx`, plus base styles in `App.css` / `index.css`
 
