@@ -153,7 +153,10 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                       />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <p className="text-3xl font-extrabold tracking-tight text-slate-100">
+                      <p
+                        className="font-extrabold tracking-tight text-slate-100 leading-none tabular-nums"
+                        style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}
+                      >
                         {pct.toFixed(1)}%
                       </p>
                       <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
@@ -194,7 +197,10 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                       />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <p className="text-3xl font-extrabold tracking-tight text-slate-100">
+                      <p
+                        className="font-extrabold tracking-tight text-slate-100 leading-none tabular-nums"
+                        style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}
+                      >
                         {transactionPct.toFixed(1)}%
                       </p>
                       <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
@@ -561,7 +567,10 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                           />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <p className="text-3xl font-extrabold tracking-tight text-slate-100">
+                          <p
+                            className="font-extrabold tracking-tight text-slate-100 leading-none tabular-nums"
+                            style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}
+                          >
                             {pct.toFixed(1)}%
                           </p>
                           <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
@@ -601,7 +610,10 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                           />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <p className="text-3xl font-extrabold tracking-tight text-slate-100">
+                          <p
+                            className="font-extrabold tracking-tight text-slate-100 leading-none tabular-nums"
+                            style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}
+                          >
                             {transactionPct.toFixed(1)}%
                           </p>
                           <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
@@ -710,7 +722,10 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                           />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <p className="text-3xl font-extrabold tracking-tight text-slate-100">
+                          <p
+                            className="font-extrabold tracking-tight text-slate-100 leading-none tabular-nums"
+                            style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}
+                          >
                             {pct.toFixed(1)}%
                           </p>
                           <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
@@ -751,7 +766,10 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                           />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <p className="text-3xl font-extrabold tracking-tight text-slate-100">
+                          <p
+                            className="font-extrabold tracking-tight text-slate-100 leading-none tabular-nums"
+                            style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}
+                          >
                             {transactionPct.toFixed(1)}%
                           </p>
                           <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
