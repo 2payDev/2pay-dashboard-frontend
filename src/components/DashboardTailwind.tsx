@@ -23,7 +23,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
   };
 
   const pct = Math.max(0, Math.min(100, data.target_achievement_percentage || 0));
-  const transactionTarget = 21500;
+  const transactionTarget = 22000;
   const transactionPctRaw =
     transactionTarget > 0 ? (data.transactions_mtd / transactionTarget) * 100 : 0;
   const transactionPct = Math.max(0, Math.min(100, transactionPctRaw));
