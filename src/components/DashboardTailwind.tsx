@@ -419,9 +419,9 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                   </div>
                   <div>
                     <h2 className="text-sm md:text-base font-semibold text-slate-100">
-                      Transactions
+                      Daily Terminal Performance
                     </h2>
-                    <p className="text-[11px] text-slate-500">Last 10</p>
+                    <p className="text-[11px] text-slate-500">Today&apos;s summary</p>
                   </div>
                 </div>
                 <div className="text-[11px] text-slate-500 font-medium">PKR</div>
@@ -429,41 +429,33 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
 
               {/* Mobile list */}
               <div className="md:hidden flex-1 min-h-0 overflow-auto p-3 space-y-2">
-                {data.last_transactions.length === 0 && (
+                {data.terminal_stats.length === 0 && (
                   <div className="h-full flex items-center justify-center text-sm text-slate-500">
-                    No transactions available
+                    No terminal data available
                   </div>
                 )}
-                {data.last_transactions.slice(0, 10).map((txn, idx) => {
-                  const isZero = txn.amount === 0;
-                  return (
-                    <div
-                      key={`${txn.transaction_id}-${idx}`}
-                      className={`rounded-2xl p-3 ring-1 ${
-                        isZero
-                          ? 'bg-rose-500/10 ring-rose-400/20'
-                          : 'bg-white/5 ring-white/10'
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="text-sm font-semibold text-slate-100 truncate">
-                            Terminal {txn.terminal_id.padStart(3, '0')}
-                          </p>
-                          <p className="mt-0.5 text-[11px] text-slate-500 font-mono truncate">
-                            {txn.transaction_id}
-                          </p>
-                        </div>
-                        <div className="text-right shrink-0">
-                          <p className={`text-sm font-semibold ${isZero ? 'text-rose-200' : 'text-slate-100'}`}>
-                            {isZero ? 'ERROR' : formatCurrency(txn.amount)}
-                          </p>
-                          <p className="mt-0.5 text-[11px] text-slate-500">{formatTime(txn.timestamp)}</p>
-                        </div>
+                {data.terminal_stats.map((stat, idx) => (
+                  <div
+                    key={`${stat.point}-${idx}`}
+                    className="rounded-2xl p-3 ring-1 bg-white/5 ring-white/10"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-semibold text-slate-100 truncate">
+                          {stat.point}
+                        </p>
+                        <p className="mt-1 text-xs text-slate-400">
+                          {stat.transactions.toLocaleString()} transactions
+                        </p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-sm font-semibold text-slate-100">
+                          {formatCurrency(stat.turnover)}
+                        </p>
                       </div>
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
 
               {/* Desktop table (scrollable, hidden scrollbar) */}
@@ -472,49 +464,34 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                   <thead className="sticky top-0 bg-slate-950/60 backdrop-blur border-b border-white/10">
                     <tr className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
                       <th className="px-4 py-3 font-semibold">Terminal</th>
-                      <th className="px-4 py-3 font-semibold">Transaction ID</th>
-                      <th className="px-4 py-3 font-semibold text-right">Amount</th>
-                      <th className="px-4 py-3 font-semibold text-right">Time</th>
+                      <th className="px-4 py-3 font-semibold text-right">Transactions</th>
+                      <th className="px-4 py-3 font-semibold text-right">Turnover</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/10">
-                    {data.last_transactions.length === 0 && (
+                    {data.terminal_stats.length === 0 && (
                       <tr>
-                        <td colSpan={4} className="px-4 py-10 text-center text-sm text-slate-500">
-                          No transactions available
+                        <td colSpan={3} className="px-4 py-10 text-center text-sm text-slate-500">
+                          No terminal data available
                         </td>
                       </tr>
                     )}
-                    {data.last_transactions.slice(0, 10).map((txn, idx) => {
-                      const isZero = txn.amount === 0;
-                      return (
-                        <tr
-                          key={`${txn.transaction_id}-${idx}`}
-                          className={`transition ${
-                            isZero
-                              ? 'bg-rose-500/10 hover:bg-rose-500/15'
-                              : 'hover:bg-white/5'
-                          }`}
-                        >
-                          <td className="px-4 py-3 text-sm font-semibold text-slate-100">
-                            Terminal {txn.terminal_id.padStart(3, '0')}
-                          </td>
-                          <td className="px-4 py-3 text-sm text-slate-400 font-mono">
-                            {txn.transaction_id}
-                          </td>
-                          <td
-                            className={`px-4 py-3 text-sm font-semibold text-right ${
-                              isZero ? 'text-rose-200' : 'text-slate-100'
-                            }`}
-                          >
-                            {isZero ? 'ERROR' : formatCurrency(txn.amount)}
-                          </td>
-                          <td className="px-4 py-3 text-sm text-slate-400 text-right">
-                            {formatTime(txn.timestamp)}
-                          </td>
-                        </tr>
-                      );
-                    })}
+                    {data.terminal_stats.map((stat, idx) => (
+                      <tr
+                        key={`${stat.point}-${idx}`}
+                        className="transition hover:bg-white/5"
+                      >
+                        <td className="px-4 py-3 text-sm font-semibold text-slate-100">
+                          {stat.point}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-slate-400 text-right">
+                          {stat.transactions.toLocaleString()}
+                        </td>
+                        <td className="px-4 py-3 text-sm font-semibold text-slate-100 text-right">
+                          {formatCurrency(stat.turnover)}
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>

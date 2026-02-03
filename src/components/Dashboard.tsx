@@ -36,34 +36,30 @@ const Dashboard: React.FC<DashboardProps> = ({ data }) => {
       </div>
 
       <div className="dashboard-grid">
-        {/* Last 10 Transactions */}
+        {/* Daily Terminal Performance */}
         <div className="dashboard-card transactions-card">
-          <h2>Latest Transactions</h2>
+          <h2>Daily Terminal Performance</h2>
           <div className="transactions-list">
-            {data.last_transactions.length > 0 ? (
-              data.last_transactions.map((transaction, index) => {
-                const isZeroAmount = transaction.amount === 0;
+            {data.terminal_stats.length > 0 ? (
+              data.terminal_stats.map((stat, index) => {
                 return (
                 <div
                   key={index}
-                  className={`transaction-item${isZeroAmount ? ' transaction-item-error' : ''}`}
+                  className="transaction-item"
                 >
                   <div className="transaction-info">
                     <span className="terminal-id">
-                      Terminal {transaction.terminal_id.padStart(3, '0')}
+                      {stat.point}
                     </span>
-                    <span className="transaction-id">{transaction.transaction_id}</span>
+                    <span className="transaction-id">{stat.transactions.toLocaleString()} transactions</span>
                     <span className="transaction-amount">
-                      {transaction.amount === 0 ? 'ERROR' : formatCurrency(transaction.amount)}
-                    </span>
-                    <span className="transaction-time">
-                      {formatTime(transaction.timestamp)}
+                      {formatCurrency(stat.turnover)}
                     </span>
                   </div>
                 </div>
               )})
             ) : (
-              <div className="no-data">No transactions available</div>
+              <div className="no-data">No terminal data available</div>
             )}
           </div>
         </div>

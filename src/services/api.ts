@@ -5,15 +5,14 @@ import axios from 'axios';
 // For local development, it falls back to http://localhost:8000.
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
-export interface Transaction {
-  terminal_id: string;
-  transaction_id: string;
-  amount: number;
-  timestamp: string;
+export interface TerminalStats {
+  point: string;
+  transactions: number;
+  turnover: number;
 }
 
 export interface DashboardData {
-  last_transactions: Transaction[];
+  terminal_stats: TerminalStats[];
   total_transactions_today: number;
   today_turnover: number;
   turnover_till_date: number;
@@ -24,7 +23,7 @@ export interface DashboardData {
 
 const isDashboardData = (data: any): data is DashboardData => {
   if (!data || typeof data !== 'object') return false;
-  if (!Array.isArray(data.last_transactions)) return false;
+  if (!Array.isArray(data.terminal_stats)) return false;
   const numberKeys: Array<keyof DashboardData> = [
     'total_transactions_today',
     'today_turnover',
