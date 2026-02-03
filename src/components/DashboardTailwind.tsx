@@ -14,8 +14,6 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
       maximumFractionDigits: 0,
     }).format(amount);
 
-  const formatTime = (timestamp: string): string => timestamp;
-
   const getProgressColor = (percentage: number): string => {
     if (percentage >= 80) return 'from-emerald-500 via-emerald-400 to-emerald-500';
     if (percentage >= 50) return 'from-amber-400 via-amber-300 to-amber-400';
