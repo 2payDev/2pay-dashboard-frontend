@@ -30,6 +30,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
   const r = (circleSize - strokeWidth) / 2;
   const c = 2 * Math.PI * r;
   const dash = (pct / 100) * c;
+  const transactionDash = (transactionPct / 100) * c;
 
   return (
     <div className="w-screen min-h-[100dvh] lg:h-screen bg-slate-950 text-slate-100 overflow-x-hidden overflow-y-auto lg:overflow-y-hidden">
@@ -119,11 +120,11 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
 
             <div className="p-4 flex flex-col gap-4">
               {/* Dual circles: turnover + transactions */}
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-6 flex-wrap">
                 {/* Turnover circle */}
-                <div className="flex flex-col items-center gap-1">
-                  <div className="relative" style={{ width: circleSize, height: circleSize }}>
-                    <svg width={circleSize} height={circleSize} className="block">
+                <div className="flex flex-col items-center gap-1 shrink-0">
+                  <div className="relative flex-shrink-0" style={{ width: circleSize, height: circleSize, minWidth: circleSize, minHeight: circleSize }}>
+                    <svg width={circleSize} height={circleSize} className="block" viewBox={`0 0 ${circleSize} ${circleSize}`} preserveAspectRatio="xMidYMid meet">
                       <defs>
                         <linearGradient id="targetGradTurnoverMobile" x1="0" y1="0" x2="1" y2="1">
                           <stop offset="0%" stopColor={pct >= 80 ? '#34d399' : pct >= 50 ? '#fbbf24' : '#fb7185'} />
@@ -150,14 +151,14 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                         transform={`rotate(-90 ${circleSize / 2} ${circleSize / 2})`}
                       />
                     </svg>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                       <p
-                        className="font-extrabold tracking-tight text-slate-100 leading-none tabular-nums"
+                        className="font-extrabold tracking-tight text-slate-100 leading-none tabular-nums text-center"
                         style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}
                       >
                         {pct.toFixed(1)}%
                       </p>
-                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500 text-center mt-0.5">
                         Turnover
                       </p>
                     </div>
@@ -165,9 +166,9 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                 </div>
 
                 {/* Transactions circle */}
-                <div className="flex flex-col items-center gap-1">
-                  <div className="relative" style={{ width: circleSize, height: circleSize }}>
-                    <svg width={circleSize} height={circleSize} className="block">
+                <div className="flex flex-col items-center gap-1 shrink-0">
+                  <div className="relative flex-shrink-0" style={{ width: circleSize, height: circleSize, minWidth: circleSize, minHeight: circleSize }}>
+                    <svg width={circleSize} height={circleSize} className="block" viewBox={`0 0 ${circleSize} ${circleSize}`} preserveAspectRatio="xMidYMid meet">
                       <defs>
                         <linearGradient id="targetGradTxnMobile" x1="0" y1="0" x2="1" y2="1">
                           <stop offset="0%" stopColor={transactionPct >= 80 ? '#34d399' : transactionPct >= 50 ? '#fbbf24' : '#fb7185'} />
@@ -190,18 +191,19 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                         strokeWidth={strokeWidth}
                         strokeLinecap="round"
                         fill="transparent"
-                        strokeDasharray={`${(transactionPct / 100) * c} ${c - (transactionPct / 100) * c}`}
+                        strokeDasharray={`${transactionDash} ${c - transactionDash}`}
                         transform={`rotate(-90 ${circleSize / 2} ${circleSize / 2})`}
                       />
                     </svg>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                       <p
-                        className="font-extrabold tracking-tight text-slate-100 leading-none tabular-nums"
-                        style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }} >
+                        className="font-extrabold tracking-tight text-slate-100 leading-none tabular-nums text-center"
+                        style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}
+                      >
                         {transactionPct.toFixed(1)}%
                       </p>
-                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
-                        Transactions 
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500 text-center mt-0.5">
+                        Transactions
                       </p>
                     </div>
                   </div>
@@ -579,7 +581,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                             strokeWidth={strokeWidth}
                             strokeLinecap="round"
                             fill="transparent"
-                            strokeDasharray={`${(transactionPct / 100) * c} ${c - (transactionPct / 100) * c}`}
+                            strokeDasharray={`${transactionDash} ${c - transactionDash}`}
                             transform={`rotate(-90 ${circleSize / 2} ${circleSize / 2})`}
                           />
                         </svg>
@@ -735,7 +737,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                             strokeWidth={strokeWidth}
                             strokeLinecap="round"
                             fill="transparent"
-                            strokeDasharray={`${(transactionPct / 100) * c} ${c - (transactionPct / 100) * c}`}
+                            strokeDasharray={`${transactionDash} ${c - transactionDash}`}
                             transform={`rotate(-90 ${circleSize / 2} ${circleSize / 2})`}
                           />
                         </svg>
