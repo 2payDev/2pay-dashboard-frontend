@@ -669,7 +669,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                     {/* Turnover circle */}
                     <div className="flex flex-col items-center gap-1">
-                      <div className="relative" style={{ width: circleSize, height: circleSize }}>
+                      <div className="relative scale-75" style={{ width: circleSize, height: circleSize }}>
                         <svg width={circleSize} height={circleSize} className="block">
                           <defs>
                             <linearGradient id="targetGradTurnoverDesktop" x1="0" y1="0" x2="1" y2="1">
@@ -713,7 +713,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
 
                     {/* Transactions circle */}
                     <div className="flex flex-col items-center gap-1">
-                      <div className="relative" style={{ width: circleSize, height: circleSize }}>
+                      <div className="relative scale-75" style={{ width: circleSize, height: circleSize }}>
                         <svg width={circleSize} height={circleSize} className="block">
                           <defs>
                             <linearGradient id="targetGradTxnDesktop" x1="0" y1="0" x2="1" y2="1">
