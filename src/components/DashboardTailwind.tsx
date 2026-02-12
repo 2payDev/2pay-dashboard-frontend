@@ -664,7 +664,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                   </span>
                 </div>
 
-                <div className="p-4 flex flex-col gap-4">
+                <div className="px-2 flex flex-col gap-4">
                   {/* Dual circles: turnover + transactions */}
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-6" style={{ marginBottom: '30px'}}>
                     {/* Turnover circle */}
