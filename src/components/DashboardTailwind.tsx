@@ -650,8 +650,8 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
             </div>
 
             {/* Target Achievement (right side on large screens only) */}
-            <div className="hidden lg:block lg:col-span-4">
-              <section className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 overflow-hidden flex flex-col">
+            <div className="hidden lg:flex lg:flex-col lg:col-span-4 h-full">
+              <section className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 overflow-hidden flex flex-col flex-1">
                 <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
                   <div>
                     <h2 className="text-sm md:text-base font-semibold text-slate-100">
