@@ -14,29 +14,30 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
       maximumFractionDigits: 0,
     }).format(amount);
 
-  const getProgressColor = (percentage: number): string => {
-    if (percentage >= 80) return 'from-emerald-500 via-emerald-400 to-emerald-500';
-    if (percentage >= 50) return 'from-amber-400 via-amber-300 to-amber-400';
-    return 'from-rose-500 via-rose-400 to-rose-500';
+  // Brand green for good, amber for warning, rose for behind
+  const getProgressColor = (pct: number): string => {
+    if (pct >= 80) return 'from-brand-dark to-brand-green';
+    if (pct >= 50) return 'from-amber-500 to-amber-400';
+    return 'from-rose-500 to-rose-400';
   };
 
   const getPaceColor = (status: string) => {
-    if (status === 'ahead') return 'bg-emerald-500/20 text-emerald-300 ring-emerald-500/30';
-    if (status === 'on_track') return 'bg-sky-500/20 text-sky-300 ring-sky-500/30';
-    return 'bg-rose-500/20 text-rose-300 ring-rose-500/30';
+    if (status === 'ahead')    return 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200';
+    if (status === 'on_track') return 'bg-brand-icon text-brand-green ring-1 ring-brand-green/30';
+    return 'bg-rose-50 text-rose-600 ring-1 ring-rose-200';
   };
 
   const paceLabel = (status: string) => {
-    if (status === 'ahead') return 'Ahead';
+    if (status === 'ahead')    return 'Ahead';
     if (status === 'on_track') return 'On Track';
     return 'Behind';
   };
 
   const pct = Math.max(0, Math.min(100, data.target_achievement_percentage || 0));
   const transactionTarget = 21500;
-  const transactionPctRaw =
-    transactionTarget > 0 ? (data.transactions_mtd / transactionTarget) * 100 : 0;
+  const transactionPctRaw = transactionTarget > 0 ? (data.transactions_mtd / transactionTarget) * 100 : 0;
   const transactionPct = Math.max(0, Math.min(100, transactionPctRaw));
+
   const circleSize = 132;
   const strokeWidth = 12;
   const r = (circleSize - strokeWidth) / 2;
@@ -44,97 +45,103 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
   const dash = (pct / 100) * c;
   const transactionDash = (transactionPct / 100) * c;
 
-  // Reusable bar rows for Target Achievement panels
+  // Circle SVG gradient colours (brand green on light bg)
+  const circleTrack = 'rgba(20,98,82,0.12)';
+  const CircleGrad = ({ id, pctValue }: { id: string; pctValue: number }) => (
+    <defs>
+      <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor={pctValue >= 50 ? '#043D31' : pctValue >= 30 ? '#f59e0b' : '#f43f5e'} />
+        <stop offset="100%" stopColor={pctValue >= 50 ? '#146252' : pctValue >= 30 ? '#fbbf24' : '#fb7185'} />
+      </linearGradient>
+    </defs>
+  );
+
+  // Reusable progress bar rows
   const TurnoverBarRow = () => (
-    <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-3 flex flex-col gap-2">
+    <div className="bg-white rounded-2xl border border-brand-border p-3 flex flex-col gap-2">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">Monthly Turnover</p>
-          <p className="mt-1 text-sm text-slate-300">
+          <p className="text-[11px] uppercase tracking-[0.22em] font-nav text-brand-body">Monthly Turnover</p>
+          <p className="mt-1 text-sm font-body font-medium text-brand-heading">
             {formatCurrency(data.turnover_till_date)} / {formatCurrency(data.target_till_date)}
           </p>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-1 ${getPaceColor(data.turnover_pace_status)}`}>
+          <span className={`text-[10px] font-nav font-bold px-1.5 py-0.5 rounded-full ${getPaceColor(data.turnover_pace_status)}`}>
             {paceLabel(data.turnover_pace_status)}
           </span>
-          <p className="text-lg font-bold text-slate-100">{pct.toFixed(1)}%</p>
+          <p className="text-lg font-heading font-bold text-brand-text">{pct.toFixed(1)}%</p>
         </div>
       </div>
-      <div className="h-2 rounded-full bg-white/10 overflow-hidden">
-        <div
-          className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(pct)}`}
-          style={{ width: `${pct}%` }}
-        />
+      <div className="h-2 rounded-full bg-brand-border overflow-hidden">
+        <div className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(pct)}`} style={{ width: `${pct}%` }} />
       </div>
-      <p className="text-[11px] text-slate-400">
-        Need <span className="text-slate-200 font-medium">{formatCurrency(data.turnover_needed_per_day)}/day</span>
-        {' · '}Projected <span className="text-slate-200 font-medium">{formatCurrency(data.projected_turnover_eom)}</span>
+      <p className="text-[11px] font-body text-brand-body">
+        Need <span className="text-brand-green font-semibold">{formatCurrency(data.turnover_needed_per_day)}/day</span>
+        {' · '}Projected <span className="text-brand-green font-semibold">{formatCurrency(data.projected_turnover_eom)}</span>
       </p>
     </div>
   );
 
   const TransactionsBarRow = () => (
-    <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-3 flex flex-col gap-2">
+    <div className="bg-white rounded-2xl border border-brand-border p-3 flex flex-col gap-2">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">Monthly Transactions</p>
-          <p className="mt-1 text-sm text-slate-300">
+          <p className="text-[11px] uppercase tracking-[0.22em] font-nav text-brand-body">Monthly Transactions</p>
+          <p className="mt-1 text-sm font-body font-medium text-brand-heading">
             {data.transactions_mtd.toLocaleString()} / {transactionTarget.toLocaleString()}
           </p>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-1 ${getPaceColor(data.transactions_pace_status)}`}>
+          <span className={`text-[10px] font-nav font-bold px-1.5 py-0.5 rounded-full ${getPaceColor(data.transactions_pace_status)}`}>
             {paceLabel(data.transactions_pace_status)}
           </span>
-          <p className="text-lg font-bold text-slate-100">{transactionPct.toFixed(1)}%</p>
+          <p className="text-lg font-heading font-bold text-brand-text">{transactionPct.toFixed(1)}%</p>
         </div>
       </div>
-      <div className="h-2 rounded-full bg-white/10 overflow-hidden">
-        <div
-          className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(transactionPct)}`}
-          style={{ width: `${transactionPct}%` }}
-        />
+      <div className="h-2 rounded-full bg-brand-border overflow-hidden">
+        <div className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(transactionPct)}`} style={{ width: `${transactionPct}%` }} />
       </div>
-      <p className="text-[11px] text-slate-400">
-        Need <span className="text-slate-200 font-medium">{Math.ceil(data.transactions_needed_per_day)}/day</span>
-        {' · '}Projected <span className="text-slate-200 font-medium">{data.projected_transactions_eom.toLocaleString()}</span>
+      <p className="text-[11px] font-body text-brand-body">
+        Need <span className="text-brand-green font-semibold">{Math.ceil(data.transactions_needed_per_day)}/day</span>
+        {' · '}Projected <span className="text-brand-green font-semibold">{data.projected_transactions_eom.toLocaleString()}</span>
       </p>
     </div>
   );
 
   return (
-    <div className="w-screen min-h-[100dvh] lg:h-screen bg-slate-950 text-slate-100 overflow-x-hidden overflow-y-auto lg:overflow-y-hidden">
-      <div className="w-full min-h-[100dvh] lg:h-full max-w-[1600px] mx-auto px-3 py-3 sm:px-5 sm:py-4 lg:px-8 lg:py-6 flex flex-col">
+    <div className="w-screen min-h-[100dvh] lg:h-screen bg-brand-bg overflow-x-hidden overflow-y-auto lg:overflow-y-hidden font-body">
+      <div className="w-full min-h-[100dvh] lg:h-full max-w-[1600px] mx-auto flex flex-col">
 
-        {/* Header */}
-        <header className="mb-3 sm:mb-4 flex items-center justify-between">
+        {/* ── Header ── dark green bar */}
+        <header className="bg-brand-dark px-4 py-3 sm:px-6 lg:px-8 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-white/5 ring-1 ring-white/10">
-              <svg className="h-4 w-4 text-sky-300" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Logo icon */}
+            <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/10">
+              <svg className="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M4 20V10.5M10 20V4M16 20V13M20 20V8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
             <div>
-              <h1 className="text-base sm:text-md md:text-xl lg:text-2xl font-semibold tracking-wide text-slate-100 truncate">
+              <h1 className="text-base sm:text-lg lg:text-xl font-display font-bold text-white tracking-wide truncate">
                 2Pay Terminal Dashboard
               </h1>
-              <p className="mt-0.5 text-[11px] md:text-xs text-slate-400 truncate">
+              <p className="mt-0.5 text-[11px] font-nav text-white/60 truncate">
                 Payment terminal performance · {data.terminal_stats.length} active terminal{data.terminal_stats.length !== 1 ? 's' : ''} today
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-1.5 rounded-full bg-white/5 ring-1 ring-white/10 px-3 py-1">
+            <div className="hidden sm:flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
               </span>
-              <span className="text-[11px] font-medium text-emerald-300 uppercase tracking-wide">Live</span>
+              <span className="text-[11px] font-nav font-medium text-emerald-300 uppercase tracking-wide">Live</span>
             </div>
-            <div className="flex items-center gap-1 text-[11px] md:text-xs text-slate-400">
-              <svg className="h-3.5 w-3.5 text-slate-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <div className="flex items-center gap-1 text-[11px] font-nav text-white/50">
+              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 6V12L15.5 13.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
                 <circle cx="12" cy="12" r="7" stroke="currentColor" strokeWidth="1.7" />
               </svg>
@@ -143,53 +150,42 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
           </div>
         </header>
 
-        <main className="flex-1 min-h-0 flex flex-col gap-3 sm:gap-4 pb-2">
+        {/* ── Body ── */}
+        <div className="flex-1 min-h-0 px-4 py-4 sm:px-6 sm:py-4 lg:px-8 lg:py-5 flex flex-col gap-4">
 
-          {/* Target Achievement — mobile only (top) */}
-          <section className="sm:hidden rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 overflow-hidden flex flex-col">
-            <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+          {/* Target Achievement — mobile only */}
+          <section className="sm:hidden bg-white rounded-2xl border border-brand-border shadow-sm overflow-hidden flex flex-col">
+            <div className="px-4 py-3 border-b border-brand-border flex items-center justify-between">
               <div>
-                <h2 className="text-sm font-semibold text-slate-100">Monthly Target Progress</h2>
-                <p className="text-[11px] text-slate-400">Day {data.days_elapsed} of {data.days_in_month} · {data.days_remaining} days left</p>
+                <h2 className="text-sm font-heading font-semibold text-brand-heading">Monthly Target Progress</h2>
+                <p className="text-[11px] font-body text-brand-body">Day {data.days_elapsed} of {data.days_in_month} · {data.days_remaining} days left</p>
               </div>
-              <span className="text-[11px] font-semibold px-2 py-1 rounded-full bg-white/5 ring-1 ring-white/10 text-slate-300">MTD</span>
+              <span className="text-[10px] font-nav font-semibold px-2 py-1 rounded-full bg-brand-icon text-brand-green ring-1 ring-brand-green/20">MTD</span>
             </div>
             <div className="p-4 flex flex-col gap-4">
               <div className="flex items-center justify-center gap-6 flex-wrap">
-                <div className="flex flex-col items-center gap-1 shrink-0">
-                  <div className="relative flex-shrink-0" style={{ width: circleSize, height: circleSize }}>
-                    <svg width={circleSize} height={circleSize} className="block" viewBox={`0 0 ${circleSize} ${circleSize}`} preserveAspectRatio="xMidYMid meet">
-                      <defs>
-                        <linearGradient id="tgTurnM" x1="0" y1="0" x2="1" y2="1">
-                          <stop offset="0%" stopColor={pct >= 80 ? '#34d399' : pct >= 50 ? '#fbbf24' : '#fb7185'} />
-                          <stop offset="100%" stopColor={pct >= 80 ? '#22c55e' : pct >= 50 ? '#f59e0b' : '#f43f5e'} />
-                        </linearGradient>
-                      </defs>
-                      <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="rgba(255,255,255,0.10)" strokeWidth={strokeWidth} fill="transparent" />
-                      <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="url(#tgTurnM)" strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent" strokeDasharray={`${dash} ${c-dash}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
-                    </svg>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                      <p className="font-extrabold text-slate-100 leading-none tabular-nums" style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}>{pct.toFixed(1)}%</p>
-                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400 mt-0.5">Turnover</p>
-                    </div>
+                {/* Turnover circle */}
+                <div className="relative shrink-0" style={{ width: circleSize, height: circleSize }}>
+                  <svg width={circleSize} height={circleSize} className="block" viewBox={`0 0 ${circleSize} ${circleSize}`}>
+                    <CircleGrad id="cgTurnMob" pctValue={pct} />
+                    <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke={circleTrack} strokeWidth={strokeWidth} fill="transparent" />
+                    <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="url(#cgTurnMob)" strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent" strokeDasharray={`${dash} ${c-dash}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <p className="font-heading font-extrabold text-brand-text leading-none tabular-nums" style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}>{pct.toFixed(1)}%</p>
+                    <p className="text-[11px] font-nav uppercase tracking-[0.22em] text-brand-body mt-0.5">Turnover</p>
                   </div>
                 </div>
-                <div className="flex flex-col items-center gap-1 shrink-0">
-                  <div className="relative flex-shrink-0" style={{ width: circleSize, height: circleSize }}>
-                    <svg width={circleSize} height={circleSize} className="block" viewBox={`0 0 ${circleSize} ${circleSize}`} preserveAspectRatio="xMidYMid meet">
-                      <defs>
-                        <linearGradient id="tgTxnM" x1="0" y1="0" x2="1" y2="1">
-                          <stop offset="0%" stopColor={transactionPct >= 80 ? '#34d399' : transactionPct >= 50 ? '#fbbf24' : '#fb7185'} />
-                          <stop offset="100%" stopColor={transactionPct >= 80 ? '#22c55e' : transactionPct >= 50 ? '#f59e0b' : '#f43f5e'} />
-                        </linearGradient>
-                      </defs>
-                      <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="rgba(255,255,255,0.10)" strokeWidth={strokeWidth} fill="transparent" />
-                      <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="url(#tgTxnM)" strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent" strokeDasharray={`${transactionDash} ${c-transactionDash}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
-                    </svg>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                      <p className="font-extrabold text-slate-100 leading-none tabular-nums" style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}>{transactionPct.toFixed(1)}%</p>
-                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400 mt-0.5">Transactions</p>
-                    </div>
+                {/* Transactions circle */}
+                <div className="relative shrink-0" style={{ width: circleSize, height: circleSize }}>
+                  <svg width={circleSize} height={circleSize} className="block" viewBox={`0 0 ${circleSize} ${circleSize}`}>
+                    <CircleGrad id="cgTxnMob" pctValue={transactionPct} />
+                    <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke={circleTrack} strokeWidth={strokeWidth} fill="transparent" />
+                    <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="url(#cgTxnMob)" strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent" strokeDasharray={`${transactionDash} ${c-transactionDash}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <p className="font-heading font-extrabold text-brand-text leading-none tabular-nums" style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}>{transactionPct.toFixed(1)}%</p>
+                    <p className="text-[11px] font-nav uppercase tracking-[0.22em] text-brand-body mt-0.5">Transactions</p>
                   </div>
                 </div>
               </div>
@@ -200,110 +196,116 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
             </div>
           </section>
 
-          {/* KPI Row — two groups: TODAY and THIS MONTH */}
+          {/* ── KPI Row — TODAY / THIS MONTH ── */}
           <section className="flex flex-col lg:flex-row gap-3 sm:gap-4">
 
-            {/* TODAY group */}
+            {/* TODAY */}
             <div className="flex-1 flex flex-col gap-2">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-500 px-1">Today</p>
+              <p className="text-[10px] font-nav font-semibold uppercase tracking-[0.25em] text-brand-body px-1">Today</p>
               <div className="grid grid-cols-2 gap-3 sm:gap-4">
 
                 {/* Today's Transactions */}
-                <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 p-4">
-                  <div className="flex items-start justify-between gap-3">
+                <div className="bg-white rounded-2xl border border-brand-border shadow-sm p-4">
+                  <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-300 font-medium">Transactions</p>
-                      <p className="mt-0.5 text-xs text-slate-500">Processed today</p>
+                      <p className="text-[11px] font-nav uppercase tracking-[0.22em] text-brand-body">Transactions</p>
+                      <p className="mt-0.5 text-xs font-body text-brand-body">Processed today</p>
                     </div>
-                    <div className="h-10 w-10 rounded-2xl bg-sky-500/10 ring-1 ring-sky-400/20 flex items-center justify-center shrink-0">
-                      <svg className="h-5 w-5 text-sky-300" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <div className="h-10 w-10 rounded-xl bg-brand-icon flex items-center justify-center shrink-0">
+                      <svg className="h-5 w-5 text-brand-green" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M8 7H20M8 7L11 4M8 7L11 10M16 17H4M16 17L13 14M16 17L13 20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
                   </div>
-                  <p className="mt-3 text-3xl md:text-4xl font-extrabold tracking-tight text-slate-100">
+                  <p className="mt-3 text-3xl md:text-4xl font-heading font-extrabold tracking-tight text-brand-text">
                     {data.total_transactions_today.toLocaleString()}
                   </p>
-                  <p className="mt-1 text-[11px] text-slate-400">
-                    <span className="text-slate-300 font-medium">{data.transactions_mtd.toLocaleString()}</span> this month
+                  <p className="mt-1 text-[11px] font-body text-brand-body">
+                    <span className="text-brand-green font-semibold">{data.transactions_mtd.toLocaleString()}</span> this month
                   </p>
                 </div>
 
                 {/* Today's Turnover */}
-                <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 p-4">
-                  <div className="flex items-start justify-between gap-3">
+                <div className="bg-white rounded-2xl border border-brand-border shadow-sm p-4">
+                  <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-300 font-medium">Turnover</p>
-                      <p className="mt-0.5 text-xs text-slate-500">Revenue today</p>
+                      <p className="text-[11px] font-nav uppercase tracking-[0.22em] text-brand-body">Turnover</p>
+                      <p className="mt-0.5 text-xs font-body text-brand-body">Revenue today</p>
                     </div>
-                    <div className="h-10 w-10 rounded-2xl bg-emerald-500/10 ring-1 ring-emerald-400/20 flex items-center justify-center shrink-0">
-                      <svg className="h-5 w-5 text-emerald-300" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <div className="h-10 w-10 rounded-xl bg-brand-icon flex items-center justify-center shrink-0">
+                      <svg className="h-5 w-5 text-brand-dark" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 4V20M8 8H12C14.2091 8 16 9.79086 16 12C16 14.2091 14.2091 16 12 16H8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
                   </div>
-                  <p className="mt-3 text-2xl md:text-3xl font-extrabold tracking-tight text-slate-100">
+                  <p className="mt-3 text-2xl md:text-3xl font-heading font-extrabold tracking-tight text-brand-text">
                     {formatCurrency(data.today_turnover)}
                   </p>
-                  <p className="mt-1 text-[11px] text-slate-400">
-                    <span className="text-slate-300 font-medium">{formatCurrency(data.turnover_till_date)}</span> this month
+                  <p className="mt-1 text-[11px] font-body text-brand-body">
+                    <span className="text-brand-green font-semibold">{formatCurrency(data.turnover_till_date)}</span> this month
                   </p>
                 </div>
 
               </div>
             </div>
 
-            {/* THIS MONTH group */}
+            {/* THIS MONTH */}
             <div className="flex-1 flex flex-col gap-2">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-500 px-1">This Month — Day {data.days_elapsed} of {data.days_in_month}</p>
+              <p className="text-[10px] font-nav font-semibold uppercase tracking-[0.25em] text-brand-body px-1">
+                This Month — Day {data.days_elapsed} of {data.days_in_month}
+              </p>
               <div className="grid grid-cols-2 gap-3 sm:gap-4">
 
-                {/* Monthly Revenue Target */}
-                <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 p-4">
-                  <div className="flex items-start justify-between gap-3">
+                {/* Revenue Target */}
+                <div className="bg-white rounded-2xl border border-brand-border shadow-sm p-4">
+                  <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-300 font-medium">Revenue Target</p>
-                      <p className="mt-0.5 text-xs text-slate-500">{data.days_remaining} days remaining</p>
+                      <p className="text-[11px] font-nav uppercase tracking-[0.22em] text-brand-body">Revenue Target</p>
+                      <p className="mt-0.5 text-xs font-body text-brand-body">{data.days_remaining} days remaining</p>
                     </div>
-                    <div className="h-10 w-10 rounded-2xl bg-indigo-500/10 ring-1 ring-indigo-400/20 flex items-center justify-center shrink-0">
-                      <svg className="h-5 w-5 text-indigo-300" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <div className="h-10 w-10 rounded-xl bg-brand-icon flex items-center justify-center shrink-0">
+                      <svg className="h-5 w-5 text-brand-green" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="1.7" />
                         <circle cx="12" cy="12" r="2.5" fill="currentColor" />
                       </svg>
                     </div>
                   </div>
-                  <p className="mt-3 text-2xl md:text-3xl font-extrabold tracking-tight text-slate-100">
+                  <p className="mt-3 text-2xl md:text-3xl font-heading font-extrabold tracking-tight text-brand-text">
                     {formatCurrency(data.target_till_date)}
                   </p>
                   <div className="mt-1 flex items-center gap-1.5 flex-wrap">
-                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-1 ${getPaceColor(data.turnover_pace_status)}`}>
+                    <span className={`text-[10px] font-nav font-bold px-1.5 py-0.5 rounded-full ${getPaceColor(data.turnover_pace_status)}`}>
                       {paceLabel(data.turnover_pace_status)}
                     </span>
-                    <span className="text-[11px] text-slate-400">Proj <span className="text-slate-300 font-medium">{formatCurrency(data.projected_turnover_eom)}</span></span>
+                    <span className="text-[11px] font-body text-brand-body">
+                      Proj <span className="text-brand-green font-semibold">{formatCurrency(data.projected_turnover_eom)}</span>
+                    </span>
                   </div>
                 </div>
 
-                {/* Monthly Transaction Goal */}
-                <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 p-4">
-                  <div className="flex items-start justify-between gap-3">
+                {/* Transaction Goal */}
+                <div className="bg-white rounded-2xl border border-brand-border shadow-sm p-4">
+                  <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-300 font-medium">Txn Goal</p>
-                      <p className="mt-0.5 text-xs text-slate-500">{data.days_remaining} days remaining</p>
+                      <p className="text-[11px] font-nav uppercase tracking-[0.22em] text-brand-body">Txn Goal</p>
+                      <p className="mt-0.5 text-xs font-body text-brand-body">{data.days_remaining} days remaining</p>
                     </div>
-                    <div className="h-10 w-10 rounded-2xl bg-violet-500/10 ring-1 ring-violet-400/20 flex items-center justify-center shrink-0">
-                      <svg className="h-5 w-5 text-violet-300" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <div className="h-10 w-10 rounded-xl bg-brand-icon flex items-center justify-center shrink-0">
+                      <svg className="h-5 w-5 text-brand-dark" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M5 11L10 16L19 7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
                   </div>
-                  <p className="mt-3 text-2xl md:text-3xl font-extrabold tracking-tight text-slate-100">
+                  <p className="mt-3 text-2xl md:text-3xl font-heading font-extrabold tracking-tight text-brand-text">
                     {transactionTarget.toLocaleString()}
                   </p>
                   <div className="mt-1 flex items-center gap-1.5 flex-wrap">
-                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-1 ${getPaceColor(data.transactions_pace_status)}`}>
+                    <span className={`text-[10px] font-nav font-bold px-1.5 py-0.5 rounded-full ${getPaceColor(data.transactions_pace_status)}`}>
                       {paceLabel(data.transactions_pace_status)}
                     </span>
-                    <span className="text-[11px] text-slate-400">Proj <span className="text-slate-300 font-medium">{data.projected_transactions_eom.toLocaleString()}</span></span>
+                    <span className="text-[11px] font-body text-brand-body">
+                      Proj <span className="text-brand-green font-semibold">{data.projected_transactions_eom.toLocaleString()}</span>
+                    </span>
                   </div>
                 </div>
 
@@ -311,39 +313,39 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
             </div>
           </section>
 
-          {/* Content */}
-          <section className="min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4">
+          {/* ── Content: Terminal Table + Target Achievement ── */}
+          <section className="min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 flex-1">
 
             {/* Terminal Table */}
-            <div className="lg:col-span-8 rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 overflow-hidden flex flex-col min-h-0">
-              <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+            <div className="lg:col-span-8 bg-white rounded-2xl border border-brand-border shadow-sm overflow-hidden flex flex-col min-h-0">
+              <div className="px-4 py-3 border-b border-brand-border flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="h-9 w-9 rounded-2xl bg-white/5 ring-1 ring-white/10 flex items-center justify-center">
-                    <svg className="h-5 w-5 text-slate-300" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <div className="h-9 w-9 rounded-xl bg-brand-icon flex items-center justify-center">
+                    <svg className="h-5 w-5 text-brand-green" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M5 7H19M5 12H19M5 17H13" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                   <div>
-                    <h2 className="text-sm md:text-base font-semibold text-slate-100">Terminal Breakdown</h2>
-                    <p className="text-[11px] text-slate-400">Each payment terminal · today only</p>
+                    <h2 className="text-sm font-heading font-semibold text-brand-heading">Terminal Breakdown</h2>
+                    <p className="text-[11px] font-body text-brand-body">Each payment terminal · today only</p>
                   </div>
                 </div>
-                <div className="text-[11px] text-slate-500 font-medium">PKR</div>
+                <span className="text-[11px] font-nav text-brand-body">PKR</span>
               </div>
 
               {/* Mobile list */}
               <div className="md:hidden flex-1 min-h-0 overflow-auto p-3 space-y-2">
                 {data.terminal_stats.length === 0 && (
-                  <div className="h-full flex items-center justify-center text-sm text-slate-500">No transactions today</div>
+                  <div className="h-full flex items-center justify-center text-sm font-body text-brand-body">No transactions today</div>
                 )}
                 {data.terminal_stats.map((stat, idx) => (
-                  <div key={`${stat.point}-${idx}`} className="rounded-2xl p-3 ring-1 bg-white/5 ring-white/10">
+                  <div key={`${stat.point}-${idx}`} className="bg-brand-bg rounded-xl p-3 border border-brand-border">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold text-slate-100 truncate">{stat.point}</p>
-                        <p className="mt-1 text-xs text-slate-400">{stat.transactions.toLocaleString()} transactions</p>
+                        <p className="text-sm font-heading font-semibold text-brand-heading truncate">{stat.point}</p>
+                        <p className="mt-1 text-xs font-body text-brand-body">{stat.transactions.toLocaleString()} transactions</p>
                       </div>
-                      <p className="text-sm font-semibold text-slate-100 shrink-0">{formatCurrency(stat.turnover)}</p>
+                      <p className="text-sm font-heading font-semibold text-brand-text shrink-0">{formatCurrency(stat.turnover)}</p>
                     </div>
                   </div>
                 ))}
@@ -352,24 +354,24 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
               {/* Desktop table */}
               <div className="hidden md:block flex-1 min-h-0 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 <table className="min-w-full text-left">
-                  <thead className="sticky top-0 bg-slate-950/60 backdrop-blur border-b border-white/10">
-                    <tr className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
+                  <thead className="sticky top-0 bg-brand-bg border-b border-brand-border">
+                    <tr className="text-[11px] font-nav uppercase tracking-[0.22em] text-brand-body">
                       <th className="px-4 py-3 font-semibold">Terminal</th>
                       <th className="px-4 py-3 font-semibold text-right">Transactions</th>
                       <th className="px-4 py-3 font-semibold text-right">Turnover (PKR)</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/10">
+                  <tbody className="divide-y divide-brand-border">
                     {data.terminal_stats.length === 0 && (
                       <tr>
-                        <td colSpan={3} className="px-4 py-10 text-center text-sm text-slate-500">No transactions today</td>
+                        <td colSpan={3} className="px-4 py-10 text-center text-sm font-body text-brand-body">No transactions today</td>
                       </tr>
                     )}
                     {data.terminal_stats.map((stat, idx) => (
-                      <tr key={`${stat.point}-${idx}`} className="transition hover:bg-white/5">
-                        <td className="px-4 py-3 text-sm font-semibold text-slate-100">{stat.point}</td>
-                        <td className="px-4 py-3 text-sm text-slate-300 text-right">{stat.transactions.toLocaleString()}</td>
-                        <td className="px-4 py-3 text-sm font-semibold text-slate-100 text-right">{formatCurrency(stat.turnover)}</td>
+                      <tr key={`${stat.point}-${idx}`} className="transition-colors hover:bg-brand-bg">
+                        <td className="px-4 py-3 text-sm font-heading font-semibold text-brand-heading">{stat.point}</td>
+                        <td className="px-4 py-3 text-sm font-body text-brand-body text-right">{stat.transactions.toLocaleString()}</td>
+                        <td className="px-4 py-3 text-sm font-heading font-semibold text-brand-text text-right">{formatCurrency(stat.turnover)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -379,50 +381,36 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
 
             {/* Target Achievement — tablet */}
             <div className="hidden sm:block lg:hidden">
-              <section className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 overflow-hidden flex flex-col">
-                <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+              <section className="bg-white rounded-2xl border border-brand-border shadow-sm overflow-hidden flex flex-col">
+                <div className="px-4 py-3 border-b border-brand-border flex items-center justify-between">
                   <div>
-                    <h2 className="text-sm font-semibold text-slate-100">Monthly Target Progress</h2>
-                    <p className="text-[11px] text-slate-400">Day {data.days_elapsed} of {data.days_in_month} · {data.days_remaining} days left</p>
+                    <h2 className="text-sm font-heading font-semibold text-brand-heading">Monthly Target Progress</h2>
+                    <p className="text-[11px] font-body text-brand-body">Day {data.days_elapsed} of {data.days_in_month} · {data.days_remaining} days left</p>
                   </div>
-                  <span className="text-[11px] font-semibold px-2 py-1 rounded-full bg-white/5 ring-1 ring-white/10 text-slate-300">MTD</span>
+                  <span className="text-[10px] font-nav font-semibold px-2 py-1 rounded-full bg-brand-icon text-brand-green ring-1 ring-brand-green/20">MTD</span>
                 </div>
                 <div className="p-4 flex flex-col gap-4">
                   <div className="flex items-center justify-center gap-6">
-                    <div className="flex flex-col items-center gap-1">
-                      <div className="relative" style={{ width: circleSize, height: circleSize }}>
-                        <svg width={circleSize} height={circleSize} className="block">
-                          <defs>
-                            <linearGradient id="tgTurnT" x1="0" y1="0" x2="1" y2="1">
-                              <stop offset="0%" stopColor={pct >= 80 ? '#34d399' : pct >= 50 ? '#fbbf24' : '#fb7185'} />
-                              <stop offset="100%" stopColor={pct >= 80 ? '#22c55e' : pct >= 50 ? '#f59e0b' : '#f43f5e'} />
-                            </linearGradient>
-                          </defs>
-                          <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="rgba(255,255,255,0.10)" strokeWidth={strokeWidth} fill="transparent" />
-                          <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="url(#tgTurnT)" strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent" strokeDasharray={`${dash} ${c-dash}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
-                        </svg>
-                        <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <p className="font-extrabold text-slate-100 leading-none tabular-nums" style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}>{pct.toFixed(1)}%</p>
-                          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">Turnover</p>
-                        </div>
+                    <div className="relative" style={{ width: circleSize, height: circleSize }}>
+                      <svg width={circleSize} height={circleSize} className="block">
+                        <CircleGrad id="cgTurnTab" pctValue={pct} />
+                        <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke={circleTrack} strokeWidth={strokeWidth} fill="transparent" />
+                        <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="url(#cgTurnTab)" strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent" strokeDasharray={`${dash} ${c-dash}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <p className="font-heading font-extrabold text-brand-text leading-none tabular-nums" style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}>{pct.toFixed(1)}%</p>
+                        <p className="text-[11px] font-nav uppercase tracking-[0.22em] text-brand-body">Turnover</p>
                       </div>
                     </div>
-                    <div className="flex flex-col items-center gap-1">
-                      <div className="relative" style={{ width: circleSize, height: circleSize }}>
-                        <svg width={circleSize} height={circleSize} className="block">
-                          <defs>
-                            <linearGradient id="tgTxnT" x1="0" y1="0" x2="1" y2="1">
-                              <stop offset="0%" stopColor={transactionPct >= 80 ? '#34d399' : transactionPct >= 50 ? '#fbbf24' : '#fb7185'} />
-                              <stop offset="100%" stopColor={transactionPct >= 80 ? '#22c55e' : transactionPct >= 50 ? '#f59e0b' : '#f43f5e'} />
-                            </linearGradient>
-                          </defs>
-                          <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="rgba(255,255,255,0.10)" strokeWidth={strokeWidth} fill="transparent" />
-                          <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="url(#tgTxnT)" strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent" strokeDasharray={`${transactionDash} ${c-transactionDash}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
-                        </svg>
-                        <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <p className="font-extrabold text-slate-100 leading-none tabular-nums" style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}>{transactionPct.toFixed(1)}%</p>
-                          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">Transactions</p>
-                        </div>
+                    <div className="relative" style={{ width: circleSize, height: circleSize }}>
+                      <svg width={circleSize} height={circleSize} className="block">
+                        <CircleGrad id="cgTxnTab" pctValue={transactionPct} />
+                        <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke={circleTrack} strokeWidth={strokeWidth} fill="transparent" />
+                        <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="url(#cgTxnTab)" strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent" strokeDasharray={`${transactionDash} ${c-transactionDash}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <p className="font-heading font-extrabold text-brand-text leading-none tabular-nums" style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}>{transactionPct.toFixed(1)}%</p>
+                        <p className="text-[11px] font-nav uppercase tracking-[0.22em] text-brand-body">Transactions</p>
                       </div>
                     </div>
                   </div>
@@ -436,50 +424,36 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
 
             {/* Target Achievement — desktop */}
             <div className="hidden lg:flex lg:flex-col lg:col-span-4 h-full">
-              <section className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 overflow-hidden flex flex-col flex-1">
-                <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+              <section className="bg-white rounded-2xl border border-brand-border shadow-sm overflow-hidden flex flex-col flex-1">
+                <div className="px-4 py-3 border-b border-brand-border flex items-center justify-between">
                   <div>
-                    <h2 className="text-sm font-semibold text-slate-100">Monthly Target Progress</h2>
-                    <p className="text-[11px] text-slate-400">Day {data.days_elapsed} of {data.days_in_month} · {data.days_remaining} days left</p>
+                    <h2 className="text-sm font-heading font-semibold text-brand-heading">Monthly Target Progress</h2>
+                    <p className="text-[11px] font-body text-brand-body">Day {data.days_elapsed} of {data.days_in_month} · {data.days_remaining} days left</p>
                   </div>
-                  <span className="text-[11px] font-semibold px-2 py-1 rounded-full bg-white/5 ring-1 ring-white/10 text-slate-300">MTD</span>
+                  <span className="text-[10px] font-nav font-semibold px-2 py-1 rounded-full bg-brand-icon text-brand-green ring-1 ring-brand-green/20">MTD</span>
                 </div>
-                <div className="px-2 flex flex-col gap-4">
-                  <div className="flex items-center justify-center gap-6" style={{ marginBottom: '30px' }}>
-                    <div className="flex flex-col items-center gap-1">
-                      <div className="relative scale-75" style={{ width: circleSize, height: circleSize }}>
-                        <svg width={circleSize} height={circleSize} className="block">
-                          <defs>
-                            <linearGradient id="tgTurnD" x1="0" y1="0" x2="1" y2="1">
-                              <stop offset="0%" stopColor={pct >= 80 ? '#34d399' : pct >= 50 ? '#fbbf24' : '#fb7185'} />
-                              <stop offset="100%" stopColor={pct >= 80 ? '#22c55e' : pct >= 50 ? '#f59e0b' : '#f43f5e'} />
-                            </linearGradient>
-                          </defs>
-                          <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="rgba(255,255,255,0.10)" strokeWidth={strokeWidth} fill="transparent" />
-                          <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="url(#tgTurnD)" strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent" strokeDasharray={`${dash} ${c-dash}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
-                        </svg>
-                        <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <p className="font-extrabold text-slate-100 leading-none tabular-nums" style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}>{pct.toFixed(1)}%</p>
-                          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">Turnover</p>
-                        </div>
+                <div className="px-3 flex flex-col gap-4 flex-1">
+                  <div className="flex items-center justify-center gap-4" style={{ marginBottom: '16px' }}>
+                    <div className="relative scale-75 shrink-0" style={{ width: circleSize, height: circleSize }}>
+                      <svg width={circleSize} height={circleSize} className="block">
+                        <CircleGrad id="cgTurnDesk" pctValue={pct} />
+                        <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke={circleTrack} strokeWidth={strokeWidth} fill="transparent" />
+                        <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="url(#cgTurnDesk)" strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent" strokeDasharray={`${dash} ${c-dash}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <p className="font-heading font-extrabold text-brand-text leading-none tabular-nums" style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}>{pct.toFixed(1)}%</p>
+                        <p className="text-[11px] font-nav uppercase tracking-[0.22em] text-brand-body">Turnover</p>
                       </div>
                     </div>
-                    <div className="flex flex-col items-center gap-1">
-                      <div className="relative scale-75" style={{ width: circleSize, height: circleSize }}>
-                        <svg width={circleSize} height={circleSize} className="block">
-                          <defs>
-                            <linearGradient id="tgTxnD" x1="0" y1="0" x2="1" y2="1">
-                              <stop offset="0%" stopColor={transactionPct >= 80 ? '#34d399' : transactionPct >= 50 ? '#fbbf24' : '#fb7185'} />
-                              <stop offset="100%" stopColor={transactionPct >= 80 ? '#22c55e' : transactionPct >= 50 ? '#f59e0b' : '#f43f5e'} />
-                            </linearGradient>
-                          </defs>
-                          <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="rgba(255,255,255,0.10)" strokeWidth={strokeWidth} fill="transparent" />
-                          <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="url(#tgTxnD)" strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent" strokeDasharray={`${transactionDash} ${c-transactionDash}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
-                        </svg>
-                        <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <p className="font-extrabold text-slate-100 leading-none tabular-nums" style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}>{transactionPct.toFixed(1)}%</p>
-                          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">Transactions</p>
-                        </div>
+                    <div className="relative scale-75 shrink-0" style={{ width: circleSize, height: circleSize }}>
+                      <svg width={circleSize} height={circleSize} className="block">
+                        <CircleGrad id="cgTxnDesk" pctValue={transactionPct} />
+                        <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke={circleTrack} strokeWidth={strokeWidth} fill="transparent" />
+                        <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="url(#cgTxnDesk)" strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent" strokeDasharray={`${transactionDash} ${c-transactionDash}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <p className="font-heading font-extrabold text-brand-text leading-none tabular-nums" style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}>{transactionPct.toFixed(1)}%</p>
+                        <p className="text-[11px] font-nav uppercase tracking-[0.22em] text-brand-body">Transactions</p>
                       </div>
                     </div>
                   </div>
@@ -492,7 +466,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
             </div>
 
           </section>
-        </main>
+        </div>
       </div>
     </div>
   );

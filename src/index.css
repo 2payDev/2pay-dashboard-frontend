@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+  To use "Pepi Trail", add the font file to /public/fonts/ and uncomment:
+
+  @font-face {
+    font-family: 'Pepi Trail';
+    src: url('/fonts/PepiTrail.woff2') format('woff2'),
+         url('/fonts/PepiTrail.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+*/
+
 * {
   margin: 0;
   padding: 0;
@@ -10,12 +23,10 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Maven Pro', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #0f172a;
+  background: #F1F6F5;
   min-height: 100vh;
   width: 100%;
   overflow-x: hidden;
@@ -33,9 +44,3 @@ body {
     overflow: hidden;
   }
 }
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-
