@@ -14,7 +14,6 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
       maximumFractionDigits: 0,
     }).format(amount);
 
-  // Brand green for good, amber for warning, rose for behind
   const getProgressColor = (pct: number): string => {
     if (pct >= 80) return 'from-brand-dark to-brand-green';
     if (pct >= 50) return 'from-amber-500 to-amber-400';
@@ -55,60 +54,66 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
     </defs>
   );
 
-  // Shared class tokens
   const cardShadow = 'shadow-[0_2px_16px_-3px_rgba(20,98,82,0.10),0_1px_4px_rgba(0,0,0,0.04)]';
   const iconContainer = 'bg-gradient-to-br from-brand-icon to-[#d6ebe5]';
 
   // Reusable progress bar rows
   const TurnoverBarRow = () => (
     <div className={`bg-white rounded-2xl border border-brand-border ${cardShadow} p-3 flex flex-col gap-2`}>
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-[11px] uppercase tracking-[0.22em] font-nav text-brand-body">Monthly Turnover</p>
-          <p className="mt-1 text-sm font-body font-medium text-brand-heading">
+      <div className="flex items-center justify-between gap-2">
+        {/* left: label + value — min-w-0 prevents overflow */}
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] uppercase tracking-[0.12em] sm:tracking-[0.22em] font-nav text-brand-body truncate">
+            Monthly Turnover
+          </p>
+          <p className="mt-1 text-xs sm:text-sm font-body font-medium text-brand-heading truncate">
             {formatCurrency(data.turnover_till_date)} / {formatCurrency(data.target_till_date)}
           </p>
         </div>
-        <div className="flex items-center gap-1.5">
+        {/* right: badge + % — shrink-0 keeps it from collapsing */}
+        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
           <span className={`text-[10px] font-nav font-bold px-1.5 py-0.5 rounded-full ${getPaceColor(data.turnover_pace_status)}`}>
             {paceLabel(data.turnover_pace_status)}
           </span>
-          <p className="text-lg font-heading font-bold text-brand-text">{pct.toFixed(1)}%</p>
+          <p className="text-base sm:text-lg font-heading font-bold text-brand-text tabular-nums">{pct.toFixed(1)}%</p>
         </div>
       </div>
       <div className="h-2.5 rounded-full bg-[#e5edeb] overflow-hidden">
         <div className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(pct)}`} style={{ width: `${pct}%` }} />
       </div>
-      <p className="text-[11px] font-body text-brand-body">
-        Need <span className="text-brand-green font-semibold">{formatCurrency(data.turnover_needed_per_day)}/day</span>
-        {' · '}Projected <span className="text-brand-green font-semibold">{formatCurrency(data.projected_turnover_eom)}</span>
-      </p>
+      {/* footnote: flex-wrap so it breaks onto 2 lines on narrow screens */}
+      <div className="flex flex-wrap gap-x-2 gap-y-0.5 text-[11px] font-body text-brand-body">
+        <span>Need <span className="text-brand-green font-semibold">{formatCurrency(data.turnover_needed_per_day)}/day</span></span>
+        <span>Proj <span className="text-brand-green font-semibold">{formatCurrency(data.projected_turnover_eom)}</span></span>
+      </div>
     </div>
   );
 
   const TransactionsBarRow = () => (
     <div className={`bg-white rounded-2xl border border-brand-border ${cardShadow} p-3 flex flex-col gap-2`}>
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-[11px] uppercase tracking-[0.22em] font-nav text-brand-body">Monthly Transactions</p>
-          <p className="mt-1 text-sm font-body font-medium text-brand-heading">
+      <div className="flex items-center justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] uppercase tracking-[0.12em] sm:tracking-[0.22em] font-nav text-brand-body truncate">
+            Monthly Transactions
+          </p>
+          <p className="mt-1 text-xs sm:text-sm font-body font-medium text-brand-heading truncate">
             {data.transactions_mtd.toLocaleString()} / {transactionTarget.toLocaleString()}
           </p>
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
           <span className={`text-[10px] font-nav font-bold px-1.5 py-0.5 rounded-full ${getPaceColor(data.transactions_pace_status)}`}>
             {paceLabel(data.transactions_pace_status)}
           </span>
-          <p className="text-lg font-heading font-bold text-brand-text">{transactionPct.toFixed(1)}%</p>
+          <p className="text-base sm:text-lg font-heading font-bold text-brand-text tabular-nums">{transactionPct.toFixed(1)}%</p>
         </div>
       </div>
       <div className="h-2.5 rounded-full bg-[#e5edeb] overflow-hidden">
         <div className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(transactionPct)}`} style={{ width: `${transactionPct}%` }} />
       </div>
-      <p className="text-[11px] font-body text-brand-body">
-        Need <span className="text-brand-green font-semibold">{Math.ceil(data.transactions_needed_per_day)}/day</span>
-        {' · '}Projected <span className="text-brand-green font-semibold">{data.projected_transactions_eom.toLocaleString()}</span>
-      </p>
+      <div className="flex flex-wrap gap-x-2 gap-y-0.5 text-[11px] font-body text-brand-body">
+        <span>Need <span className="text-brand-green font-semibold">{Math.ceil(data.transactions_needed_per_day)}/day</span></span>
+        <span>Proj <span className="text-brand-green font-semibold">{data.projected_transactions_eom.toLocaleString()}</span></span>
+      </div>
     </div>
   );
 
@@ -116,26 +121,25 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
     <div className="w-screen min-h-[100dvh] lg:h-screen bg-brand-bg overflow-x-hidden overflow-y-auto lg:overflow-y-hidden font-body">
       <div className="w-full min-h-[100dvh] lg:h-full max-w-[1600px] mx-auto flex flex-col">
 
-        {/* ── Header ── gradient dark green bar */}
+        {/* ── Header ── */}
         <header className="bg-gradient-to-br from-[#021a15] via-brand-dark to-[#135748] shadow-[0_4px_24px_rgba(4,61,49,0.35)] px-4 py-3 sm:px-6 lg:px-8 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3 min-w-0">
-            {/* Logo icon */}
-            <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/10">
+            <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/10 shrink-0">
               <svg className="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M4 20V10.5M10 20V4M16 20V13M20 20V8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            <div>
+            <div className="min-w-0">
               <h1 className="text-base sm:text-lg lg:text-xl font-display font-bold text-white tracking-wide truncate">
                 2Pay Terminal Dashboard
               </h1>
               <p className="mt-0.5 text-[11px] font-nav text-white/60 truncate">
-                Payment terminal performance · {data.terminal_stats.length} active terminal{data.terminal_stats.length !== 1 ? 's' : ''} today
+                {data.terminal_stats.length} terminal{data.terminal_stats.length !== 1 ? 's' : ''} active today
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <div className="hidden sm:flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
@@ -143,8 +147,13 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
               </span>
               <span className="text-[11px] font-nav font-medium text-emerald-300 uppercase tracking-wide">Live</span>
             </div>
-            <div className="flex items-center gap-1 text-[11px] font-nav text-white/50">
-              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Live dot only on mobile, no text */}
+            <span className="relative flex h-2 w-2 sm:hidden">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+            </span>
+            <div className="hidden sm:flex items-center gap-1 text-[11px] font-nav text-white/50">
+              <svg className="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 6V12L15.5 13.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
                 <circle cx="12" cy="12" r="7" stroke="currentColor" strokeWidth="1.7" />
               </svg>
@@ -166,7 +175,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
               <span className="text-[10px] font-nav font-semibold px-2 py-1 rounded-full bg-brand-icon text-brand-green ring-1 ring-brand-green/20">MTD</span>
             </div>
             <div className="p-4 flex flex-col gap-4">
-              <div className="flex items-center justify-center gap-6 flex-wrap">
+              <div className="flex items-center justify-center gap-4 flex-wrap">
                 {/* Turnover circle */}
                 <div className="relative shrink-0" style={{ width: circleSize, height: circleSize }}>
                   <svg width={circleSize} height={circleSize} className="block" viewBox={`0 0 ${circleSize} ${circleSize}`}>
@@ -208,46 +217,46 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                 <span className="inline-block h-1.5 w-1.5 rounded-full bg-brand-green" />
                 Today
               </p>
-              <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              <div className="grid grid-cols-2 gap-2 sm:gap-4">
 
                 {/* Today's Transactions */}
-                <div className={`bg-white rounded-2xl border border-brand-border border-t-2 border-t-brand-green ${cardShadow} p-4`}>
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <p className="text-[11px] font-nav uppercase tracking-[0.22em] text-brand-body">Transactions</p>
-                      <p className="mt-0.5 text-xs font-body text-brand-body">Processed today</p>
+                <div className={`bg-white rounded-2xl border border-brand-border border-t-2 border-t-brand-green ${cardShadow} p-3 sm:p-4`}>
+                  <div className="flex items-start justify-between gap-1.5 sm:gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[10px] sm:text-[11px] font-nav uppercase tracking-tight sm:tracking-[0.22em] text-brand-body truncate">Transactions</p>
+                      <p className="mt-0.5 text-[10px] sm:text-xs font-body text-brand-body truncate">Processed today</p>
                     </div>
-                    <div className={`h-10 w-10 rounded-xl ${iconContainer} flex items-center justify-center shrink-0`}>
-                      <svg className="h-5 w-5 text-brand-green" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-xl ${iconContainer} flex items-center justify-center shrink-0`}>
+                      <svg className="h-4 w-4 sm:h-5 sm:w-5 text-brand-green" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M8 7H20M8 7L11 4M8 7L11 10M16 17H4M16 17L13 14M16 17L13 20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
                   </div>
-                  <p className="mt-3 text-3xl md:text-4xl font-heading font-extrabold tracking-tight text-brand-text">
+                  <p className="mt-2 sm:mt-3 text-2xl sm:text-3xl md:text-4xl font-heading font-extrabold tracking-tight text-brand-text tabular-nums">
                     {data.total_transactions_today.toLocaleString()}
                   </p>
-                  <p className="mt-1 text-[11px] font-body text-brand-body">
+                  <p className="mt-1 text-[10px] sm:text-[11px] font-body text-brand-body truncate">
                     <span className="text-brand-green font-semibold">{data.transactions_mtd.toLocaleString()}</span> this month
                   </p>
                 </div>
 
                 {/* Today's Turnover */}
-                <div className={`bg-white rounded-2xl border border-brand-border border-t-2 border-t-brand-green ${cardShadow} p-4`}>
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <p className="text-[11px] font-nav uppercase tracking-[0.22em] text-brand-body">Turnover</p>
-                      <p className="mt-0.5 text-xs font-body text-brand-body">Revenue today</p>
+                <div className={`bg-white rounded-2xl border border-brand-border border-t-2 border-t-brand-green ${cardShadow} p-3 sm:p-4`}>
+                  <div className="flex items-start justify-between gap-1.5 sm:gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[10px] sm:text-[11px] font-nav uppercase tracking-tight sm:tracking-[0.22em] text-brand-body truncate">Turnover</p>
+                      <p className="mt-0.5 text-[10px] sm:text-xs font-body text-brand-body truncate">Revenue today</p>
                     </div>
-                    <div className={`h-10 w-10 rounded-xl ${iconContainer} flex items-center justify-center shrink-0`}>
-                      <svg className="h-5 w-5 text-brand-dark" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-xl ${iconContainer} flex items-center justify-center shrink-0`}>
+                      <svg className="h-4 w-4 sm:h-5 sm:w-5 text-brand-dark" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 4V20M8 8H12C14.2091 8 16 9.79086 16 12C16 14.2091 14.2091 16 12 16H8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
                   </div>
-                  <p className="mt-3 text-2xl md:text-3xl font-heading font-extrabold tracking-tight text-brand-text">
+                  <p className="mt-2 sm:mt-3 text-lg sm:text-2xl md:text-3xl font-heading font-extrabold tracking-tight text-brand-text tabular-nums truncate">
                     {formatCurrency(data.today_turnover)}
                   </p>
-                  <p className="mt-1 text-[11px] font-body text-brand-body">
+                  <p className="mt-1 text-[10px] sm:text-[11px] font-body text-brand-body truncate">
                     <span className="text-brand-green font-semibold">{formatCurrency(data.turnover_till_date)}</span> this month
                   </p>
                 </div>
@@ -259,58 +268,58 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
             <div className="flex-1 flex flex-col gap-2">
               <p className="text-[10px] font-nav font-semibold uppercase tracking-[0.25em] text-brand-body px-1 flex items-center gap-1.5">
                 <span className="inline-block h-1.5 w-1.5 rounded-full bg-brand-dark" />
-                This Month — Day {data.days_elapsed} of {data.days_in_month}
+                This Month<span className="hidden sm:inline"> — Day {data.days_elapsed} of {data.days_in_month}</span>
               </p>
-              <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              <div className="grid grid-cols-2 gap-2 sm:gap-4">
 
                 {/* Revenue Target */}
-                <div className={`bg-white rounded-2xl border border-brand-border border-t-2 border-t-brand-dark ${cardShadow} p-4`}>
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <p className="text-[11px] font-nav uppercase tracking-[0.22em] text-brand-body">Revenue Target</p>
-                      <p className="mt-0.5 text-xs font-body text-brand-body">{data.days_remaining} days remaining</p>
+                <div className={`bg-white rounded-2xl border border-brand-border border-t-2 border-t-brand-dark ${cardShadow} p-3 sm:p-4`}>
+                  <div className="flex items-start justify-between gap-1.5 sm:gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[10px] sm:text-[11px] font-nav uppercase tracking-tight sm:tracking-[0.22em] text-brand-body truncate">Rev. Target</p>
+                      <p className="mt-0.5 text-[10px] sm:text-xs font-body text-brand-body truncate">{data.days_remaining} days left</p>
                     </div>
-                    <div className={`h-10 w-10 rounded-xl ${iconContainer} flex items-center justify-center shrink-0`}>
-                      <svg className="h-5 w-5 text-brand-green" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-xl ${iconContainer} flex items-center justify-center shrink-0`}>
+                      <svg className="h-4 w-4 sm:h-5 sm:w-5 text-brand-green" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="1.7" />
                         <circle cx="12" cy="12" r="2.5" fill="currentColor" />
                       </svg>
                     </div>
                   </div>
-                  <p className="mt-3 text-2xl md:text-3xl font-heading font-extrabold tracking-tight text-brand-text">
+                  <p className="mt-2 sm:mt-3 text-lg sm:text-2xl md:text-3xl font-heading font-extrabold tracking-tight text-brand-text tabular-nums truncate">
                     {formatCurrency(data.target_till_date)}
                   </p>
-                  <div className="mt-1 flex items-center gap-1.5 flex-wrap">
+                  <div className="mt-1 flex items-center gap-1 sm:gap-1.5 flex-wrap">
                     <span className={`text-[10px] font-nav font-bold px-1.5 py-0.5 rounded-full ${getPaceColor(data.turnover_pace_status)}`}>
                       {paceLabel(data.turnover_pace_status)}
                     </span>
-                    <span className="text-[11px] font-body text-brand-body">
+                    <span className="text-[10px] sm:text-[11px] font-body text-brand-body truncate">
                       Proj <span className="text-brand-green font-semibold">{formatCurrency(data.projected_turnover_eom)}</span>
                     </span>
                   </div>
                 </div>
 
                 {/* Transaction Goal */}
-                <div className={`bg-white rounded-2xl border border-brand-border border-t-2 border-t-brand-dark ${cardShadow} p-4`}>
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <p className="text-[11px] font-nav uppercase tracking-[0.22em] text-brand-body">Txn Goal</p>
-                      <p className="mt-0.5 text-xs font-body text-brand-body">{data.days_remaining} days remaining</p>
+                <div className={`bg-white rounded-2xl border border-brand-border border-t-2 border-t-brand-dark ${cardShadow} p-3 sm:p-4`}>
+                  <div className="flex items-start justify-between gap-1.5 sm:gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[10px] sm:text-[11px] font-nav uppercase tracking-tight sm:tracking-[0.22em] text-brand-body truncate">Txn Goal</p>
+                      <p className="mt-0.5 text-[10px] sm:text-xs font-body text-brand-body truncate">{data.days_remaining} days left</p>
                     </div>
-                    <div className={`h-10 w-10 rounded-xl ${iconContainer} flex items-center justify-center shrink-0`}>
-                      <svg className="h-5 w-5 text-brand-dark" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-xl ${iconContainer} flex items-center justify-center shrink-0`}>
+                      <svg className="h-4 w-4 sm:h-5 sm:w-5 text-brand-dark" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M5 11L10 16L19 7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
                   </div>
-                  <p className="mt-3 text-2xl md:text-3xl font-heading font-extrabold tracking-tight text-brand-text">
+                  <p className="mt-2 sm:mt-3 text-2xl sm:text-2xl md:text-3xl font-heading font-extrabold tracking-tight text-brand-text tabular-nums">
                     {transactionTarget.toLocaleString()}
                   </p>
-                  <div className="mt-1 flex items-center gap-1.5 flex-wrap">
+                  <div className="mt-1 flex items-center gap-1 sm:gap-1.5 flex-wrap">
                     <span className={`text-[10px] font-nav font-bold px-1.5 py-0.5 rounded-full ${getPaceColor(data.transactions_pace_status)}`}>
                       {paceLabel(data.transactions_pace_status)}
                     </span>
-                    <span className="text-[11px] font-body text-brand-body">
+                    <span className="text-[10px] sm:text-[11px] font-body text-brand-body truncate">
                       Proj <span className="text-brand-green font-semibold">{data.projected_transactions_eom.toLocaleString()}</span>
                     </span>
                   </div>
@@ -327,17 +336,17 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
             <div className={`lg:col-span-8 bg-white rounded-2xl border border-brand-border ${cardShadow} overflow-hidden flex flex-col min-h-0`}>
               <div className="px-4 py-3 border-b border-brand-border flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className={`h-9 w-9 rounded-xl ${iconContainer} flex items-center justify-center`}>
+                  <div className={`h-9 w-9 rounded-xl ${iconContainer} flex items-center justify-center shrink-0`}>
                     <svg className="h-5 w-5 text-brand-green" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M5 7H19M5 12H19M5 17H13" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <h2 className="text-sm font-heading font-semibold text-brand-heading">Terminal Breakdown</h2>
-                    <p className="text-[11px] font-body text-brand-body">Each payment terminal · today only</p>
+                    <p className="text-[11px] font-body text-brand-body truncate">Each payment terminal · today only</p>
                   </div>
                 </div>
-                <span className="text-[11px] font-nav text-brand-body">PKR</span>
+                <span className="text-[11px] font-nav text-brand-body shrink-0 ml-2">PKR</span>
               </div>
 
               {/* Mobile list */}
@@ -347,10 +356,10 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                 )}
                 {data.terminal_stats.map((stat, idx) => (
                   <div key={`${stat.point}-${idx}`} className="bg-brand-bg rounded-xl p-3 border border-brand-border">
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center justify-between gap-3">
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-heading font-semibold text-brand-heading truncate">{stat.point}</p>
-                        <p className="mt-1 text-xs font-body text-brand-body">{stat.transactions.toLocaleString()} transactions</p>
+                        <p className="mt-0.5 text-xs font-body text-brand-body">{stat.transactions.toLocaleString()} txns</p>
                       </div>
                       <p className="text-sm font-heading font-semibold text-brand-text shrink-0">{formatCurrency(stat.turnover)}</p>
                     </div>
