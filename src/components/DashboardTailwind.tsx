@@ -20,6 +20,18 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
     return 'from-rose-500 via-rose-400 to-rose-500';
   };
 
+  const getPaceColor = (status: string) => {
+    if (status === 'ahead') return 'bg-emerald-500/20 text-emerald-300 ring-emerald-500/30';
+    if (status === 'on_track') return 'bg-sky-500/20 text-sky-300 ring-sky-500/30';
+    return 'bg-rose-500/20 text-rose-300 ring-rose-500/30';
+  };
+
+  const paceLabel = (status: string) => {
+    if (status === 'ahead') return 'Ahead';
+    if (status === 'on_track') return 'On Track';
+    return 'Behind';
+  };
+
   const pct = Math.max(0, Math.min(100, data.target_achievement_percentage || 0));
   const transactionTarget = 21500;
   const transactionPctRaw =
@@ -32,35 +44,83 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
   const dash = (pct / 100) * c;
   const transactionDash = (transactionPct / 100) * c;
 
+  // Reusable bar rows for Target Achievement panels
+  const TurnoverBarRow = () => (
+    <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-3 flex flex-col gap-2">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">Monthly Turnover</p>
+          <p className="mt-1 text-sm text-slate-300">
+            {formatCurrency(data.turnover_till_date)} / {formatCurrency(data.target_till_date)}
+          </p>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-1 ${getPaceColor(data.turnover_pace_status)}`}>
+            {paceLabel(data.turnover_pace_status)}
+          </span>
+          <p className="text-lg font-bold text-slate-100">{pct.toFixed(1)}%</p>
+        </div>
+      </div>
+      <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+        <div
+          className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(pct)}`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <p className="text-[11px] text-slate-400">
+        Need <span className="text-slate-200 font-medium">{formatCurrency(data.turnover_needed_per_day)}/day</span>
+        {' · '}Projected <span className="text-slate-200 font-medium">{formatCurrency(data.projected_turnover_eom)}</span>
+      </p>
+    </div>
+  );
+
+  const TransactionsBarRow = () => (
+    <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-3 flex flex-col gap-2">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">Monthly Transactions</p>
+          <p className="mt-1 text-sm text-slate-300">
+            {data.transactions_mtd.toLocaleString()} / {transactionTarget.toLocaleString()}
+          </p>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-1 ${getPaceColor(data.transactions_pace_status)}`}>
+            {paceLabel(data.transactions_pace_status)}
+          </span>
+          <p className="text-lg font-bold text-slate-100">{transactionPct.toFixed(1)}%</p>
+        </div>
+      </div>
+      <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+        <div
+          className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(transactionPct)}`}
+          style={{ width: `${transactionPct}%` }}
+        />
+      </div>
+      <p className="text-[11px] text-slate-400">
+        Need <span className="text-slate-200 font-medium">{Math.ceil(data.transactions_needed_per_day)}/day</span>
+        {' · '}Projected <span className="text-slate-200 font-medium">{data.projected_transactions_eom.toLocaleString()}</span>
+      </p>
+    </div>
+  );
+
   return (
     <div className="w-screen min-h-[100dvh] lg:h-screen bg-slate-950 text-slate-100 overflow-x-hidden overflow-y-auto lg:overflow-y-hidden">
       <div className="w-full min-h-[100dvh] lg:h-full max-w-[1600px] mx-auto px-3 py-3 sm:px-5 sm:py-4 lg:px-8 lg:py-6 flex flex-col">
+
         {/* Header */}
         <header className="mb-3 sm:mb-4 flex items-center justify-between">
           <div className="flex items-center gap-3 min-w-0">
             <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-white/5 ring-1 ring-white/10">
-              {/* Chart icon (Heroicons-style) */}
-              <svg
-                className="h-4 w-4 text-sky-300"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4 20V10.5M10 20V4M16 20V13M20 20V8"
-                  stroke="currentColor"
-                  strokeWidth="1.7"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
+              <svg className="h-4 w-4 text-sky-300" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 20V10.5M10 20V4M16 20V13M20 20V8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
             <div>
               <h1 className="text-base sm:text-md md:text-xl lg:text-2xl font-semibold tracking-wide text-slate-100 truncate">
-                Daily Performance Dashboard
+                2Pay Terminal Dashboard
               </h1>
-              <p className="mt-0.5 text-[11px] md:text-xs text-slate-100 font-medium truncate">
-                Live operational view • Optimized for large displays
+              <p className="mt-0.5 text-[11px] md:text-xs text-slate-400 truncate">
+                Payment terminal performance · {data.terminal_stats.length} active terminal{data.terminal_stats.length !== 1 ? 's' : ''} today
               </p>
             </div>
           </div>
@@ -71,356 +131,201 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
               </span>
-              <span className="text-[11px] font-medium text-emerald-300 uppercase tracking-wide">
-                Live
-              </span>
+              <span className="text-[11px] font-medium text-emerald-300 uppercase tracking-wide">Live</span>
             </div>
             <div className="flex items-center gap-1 text-[11px] md:text-xs text-slate-400">
-              {/* Clock icon */}
-              <svg
-                className="h-3.5 w-3.5 text-slate-500"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M12 6V12L15.5 13.5"
-                  stroke="currentColor"
-                  strokeWidth="1.7"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="7"
-                  stroke="currentColor"
-                  strokeWidth="1.7"
-                />
+              <svg className="h-3.5 w-3.5 text-slate-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 6V12L15.5 13.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                <circle cx="12" cy="12" r="7" stroke="currentColor" strokeWidth="1.7" />
               </svg>
-              <span>Last updated: {new Date().toLocaleTimeString()}</span>
+              <span>Updated: {new Date().toLocaleTimeString()}</span>
             </div>
           </div>
         </header>
 
         <main className="flex-1 min-h-0 flex flex-col gap-3 sm:gap-4 pb-2">
-          {/* Target Achievement (top on mobile only) */}
+
+          {/* Target Achievement — mobile only (top) */}
           <section className="sm:hidden rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 overflow-hidden flex flex-col">
             <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
               <div>
-                <h2 className="text-sm md:text-base font-semibold text-slate-100">
-                  Target Achievement
-                </h2>
-                <p className="text-[11px] text-slate-500">Month to date</p>
+                <h2 className="text-sm font-semibold text-slate-100">Monthly Target Progress</h2>
+                <p className="text-[11px] text-slate-400">Day {data.days_elapsed} of {data.days_in_month} · {data.days_remaining} days left</p>
               </div>
-              <span className="text-[11px] font-semibold px-2 py-1 rounded-full bg-white/5 ring-1 ring-white/10 text-slate-300">
-                MTD
-              </span>
+              <span className="text-[11px] font-semibold px-2 py-1 rounded-full bg-white/5 ring-1 ring-white/10 text-slate-300">MTD</span>
             </div>
-
             <div className="p-4 flex flex-col gap-4">
-              {/* Dual circles: turnover + transactions */}
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-6 flex-wrap">
-                {/* Turnover circle */}
+              <div className="flex items-center justify-center gap-6 flex-wrap">
                 <div className="flex flex-col items-center gap-1 shrink-0">
-                  <div className="relative flex-shrink-0" style={{ width: circleSize, height: circleSize, minWidth: circleSize, minHeight: circleSize }}>
+                  <div className="relative flex-shrink-0" style={{ width: circleSize, height: circleSize }}>
                     <svg width={circleSize} height={circleSize} className="block" viewBox={`0 0 ${circleSize} ${circleSize}`} preserveAspectRatio="xMidYMid meet">
                       <defs>
-                        <linearGradient id="targetGradTurnoverMobile" x1="0" y1="0" x2="1" y2="1">
+                        <linearGradient id="tgTurnM" x1="0" y1="0" x2="1" y2="1">
                           <stop offset="0%" stopColor={pct >= 80 ? '#34d399' : pct >= 50 ? '#fbbf24' : '#fb7185'} />
                           <stop offset="100%" stopColor={pct >= 80 ? '#22c55e' : pct >= 50 ? '#f59e0b' : '#f43f5e'} />
                         </linearGradient>
                       </defs>
-                      <circle
-                        cx={circleSize / 2}
-                        cy={circleSize / 2}
-                        r={r}
-                        stroke="rgba(255,255,255,0.10)"
-                        strokeWidth={strokeWidth}
-                        fill="transparent"
-                      />
-                      <circle
-                        cx={circleSize / 2}
-                        cy={circleSize / 2}
-                        r={r}
-                        stroke="url(#targetGradTurnoverMobile)"
-                        strokeWidth={strokeWidth}
-                        strokeLinecap="round"
-                        fill="transparent"
-                        strokeDasharray={`${dash} ${c - dash}`}
-                        transform={`rotate(-90 ${circleSize / 2} ${circleSize / 2})`}
-                      />
+                      <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="rgba(255,255,255,0.10)" strokeWidth={strokeWidth} fill="transparent" />
+                      <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="url(#tgTurnM)" strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent" strokeDasharray={`${dash} ${c-dash}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                      <p
-                        className="font-extrabold tracking-tight text-slate-100 leading-none tabular-nums text-center"
-                        style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}
-                      >
-                        {pct.toFixed(1)}%
-                      </p>
-                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500 text-center mt-0.5">
-                        Turnover
-                      </p>
+                      <p className="font-extrabold text-slate-100 leading-none tabular-nums" style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}>{pct.toFixed(1)}%</p>
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400 mt-0.5">Turnover</p>
                     </div>
                   </div>
                 </div>
-
-                {/* Transactions circle */}
                 <div className="flex flex-col items-center gap-1 shrink-0">
-                  <div className="relative flex-shrink-0" style={{ width: circleSize, height: circleSize, minWidth: circleSize, minHeight: circleSize }}>
+                  <div className="relative flex-shrink-0" style={{ width: circleSize, height: circleSize }}>
                     <svg width={circleSize} height={circleSize} className="block" viewBox={`0 0 ${circleSize} ${circleSize}`} preserveAspectRatio="xMidYMid meet">
                       <defs>
-                        <linearGradient id="targetGradTxnMobile" x1="0" y1="0" x2="1" y2="1">
+                        <linearGradient id="tgTxnM" x1="0" y1="0" x2="1" y2="1">
                           <stop offset="0%" stopColor={transactionPct >= 80 ? '#34d399' : transactionPct >= 50 ? '#fbbf24' : '#fb7185'} />
                           <stop offset="100%" stopColor={transactionPct >= 80 ? '#22c55e' : transactionPct >= 50 ? '#f59e0b' : '#f43f5e'} />
                         </linearGradient>
                       </defs>
-                      <circle
-                        cx={circleSize / 2}
-                        cy={circleSize / 2}
-                        r={r}
-                        stroke="rgba(255,255,255,0.10)"
-                        strokeWidth={strokeWidth}
-                        fill="transparent"
-                      />
-                      <circle
-                        cx={circleSize / 2}
-                        cy={circleSize / 2}
-                        r={r}
-                        stroke="url(#targetGradTxnMobile)"
-                        strokeWidth={strokeWidth}
-                        strokeLinecap="round"
-                        fill="transparent"
-                        strokeDasharray={`${transactionDash} ${c - transactionDash}`}
-                        transform={`rotate(-90 ${circleSize / 2} ${circleSize / 2})`}
-                      />
+                      <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="rgba(255,255,255,0.10)" strokeWidth={strokeWidth} fill="transparent" />
+                      <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="url(#tgTxnM)" strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent" strokeDasharray={`${transactionDash} ${c-transactionDash}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                      <p
-                        className="font-extrabold tracking-tight text-slate-100 leading-none tabular-nums text-center"
-                        style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}
-                      >
-                        {transactionPct.toFixed(1)}%
-                      </p>
-                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500 text-center mt-0.5">
-                        Transactions
-                      </p>
+                      <p className="font-extrabold text-slate-100 leading-none tabular-nums" style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}>{transactionPct.toFixed(1)}%</p>
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400 mt-0.5">Transactions</p>
                     </div>
                   </div>
                 </div>
               </div>
-
               <div className="grid grid-cols-1 gap-3">
-                {/* Turnover achievement */}
-                <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-3 flex flex-col gap-2">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
-                        Turnover
-                      </p>
-                      <p className="mt-1 text-sm text-slate-400">
-                        {formatCurrency(data.turnover_till_date)} / {formatCurrency(data.target_till_date)}
-                      </p>
-                    </div>
-                    <p className="text-lg font-bold text-slate-100">
-                      {pct.toFixed(1)}%
-                    </p>
-                  </div>
-                  <div className="h-2 rounded-full bg-white/10 overflow-hidden">
-                    <div
-                      className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(pct)}`}
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* Transactions achievement */}
-                <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-3 flex flex-col gap-2">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
-                        Transactions
-                      </p>
-                      <p className="mt-1 text-sm text-slate-400">
-                        {data.transactions_mtd.toLocaleString()} / {transactionTarget.toLocaleString()}
-                      </p>
-                    </div>
-                    <p className="text-lg font-bold text-slate-100">
-                      {transactionPct.toFixed(1)}%
-                    </p>
-                  </div>
-                  <div className="h-2 rounded-full bg-white/10 overflow-hidden">
-                    <div
-                      className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(transactionPct)}`}
-                      style={{ width: `${transactionPct}%` }}
-                    />
-                  </div>
-                </div>
+                <TurnoverBarRow />
+                <TransactionsBarRow />
               </div>
             </div>
           </section>
 
-          {/* KPI Row */}
-          <section className="grid grid-cols-2 max-[420px]:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            {/* KPI: Total Transactions */}
-            <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-[11px] uppercase tracking-[0.22em] text-slate-100">
-                    Total transactions
+          {/* KPI Row — two groups: TODAY and THIS MONTH */}
+          <section className="flex flex-col lg:flex-row gap-3 sm:gap-4">
+
+            {/* TODAY group */}
+            <div className="flex-1 flex flex-col gap-2">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-500 px-1">Today</p>
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
+
+                {/* Today's Transactions */}
+                <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-300 font-medium">Transactions</p>
+                      <p className="mt-0.5 text-xs text-slate-500">Processed today</p>
+                    </div>
+                    <div className="h-10 w-10 rounded-2xl bg-sky-500/10 ring-1 ring-sky-400/20 flex items-center justify-center shrink-0">
+                      <svg className="h-5 w-5 text-sky-300" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8 7H20M8 7L11 4M8 7L11 10M16 17H4M16 17L13 14M16 17L13 20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                  </div>
+                  <p className="mt-3 text-3xl md:text-4xl font-extrabold tracking-tight text-slate-100">
+                    {data.total_transactions_today.toLocaleString()}
                   </p>
-                  <p className="mt-0.5 text-xs text-slate-500">Today</p>
+                  <p className="mt-1 text-[11px] text-slate-400">
+                    <span className="text-slate-300 font-medium">{data.transactions_mtd.toLocaleString()}</span> this month
+                  </p>
                 </div>
-                <div className="h-10 w-10 rounded-2xl bg-sky-500/10 ring-1 ring-sky-400/20 flex items-center justify-center">
-                  <svg
-                    className="h-5 w-5 text-sky-300"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M8 7H20M8 7L11 4M8 7L11 10M16 17H4M16 17L13 14M16 17L13 20"
-                      stroke="currentColor"
-                      strokeWidth="1.7"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+
+                {/* Today's Turnover */}
+                <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-300 font-medium">Turnover</p>
+                      <p className="mt-0.5 text-xs text-slate-500">Revenue today</p>
+                    </div>
+                    <div className="h-10 w-10 rounded-2xl bg-emerald-500/10 ring-1 ring-emerald-400/20 flex items-center justify-center shrink-0">
+                      <svg className="h-5 w-5 text-emerald-300" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 4V20M8 8H12C14.2091 8 16 9.79086 16 12C16 14.2091 14.2091 16 12 16H8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                  </div>
+                  <p className="mt-3 text-2xl md:text-3xl font-extrabold tracking-tight text-slate-100">
+                    {formatCurrency(data.today_turnover)}
+                  </p>
+                  <p className="mt-1 text-[11px] text-slate-400">
+                    <span className="text-slate-300 font-medium">{formatCurrency(data.turnover_till_date)}</span> this month
+                  </p>
                 </div>
+
               </div>
-              <p className="mt-3 text-3xl md:text-4xl font-extrabold tracking-tight text-slate-100">
-                {data.total_transactions_today.toLocaleString()}
-              </p>
-              <p className="mt-1 text-[11px] uppercase tracking-[0.22em] text-slate-500">
-                Transactions
-              </p>
             </div>
 
-            {/* KPI: Today's Turnover */}
-            <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-[11px] uppercase tracking-[0.22em] text-slate-100">
-                    Today&apos;s turnover
-                  </p>
-                  <p className="mt-0.5 text-xs text-slate-500">Realized volume</p>
-                </div>
-                <div className="h-10 w-10 rounded-2xl bg-emerald-500/10 ring-1 ring-emerald-400/20 flex items-center justify-center">
-                  <svg
-                    className="h-5 w-5 text-emerald-300"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M12 4V20M8 8H12C14.2091 8 16 9.79086 16 12C16 14.2091 14.2091 16 12 16H8"
-                      stroke="currentColor"
-                      strokeWidth="1.7"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-              </div>
-              <p className="mt-3 text-2xl md:text-3xl font-extrabold tracking-tight text-slate-100">
-                {formatCurrency(data.today_turnover)}
-              </p>
-              <p className="mt-1 text-[11px] uppercase tracking-[0.22em] text-slate-500">
-                PKR
-              </p>
-            </div>
+            {/* THIS MONTH group */}
+            <div className="flex-1 flex flex-col gap-2">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-500 px-1">This Month — Day {data.days_elapsed} of {data.days_in_month}</p>
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
 
-            {/* KPI: Month Target */}
-            <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-[11px] uppercase tracking-[0.22em] text-slate-100">
-                    Month target
+                {/* Monthly Revenue Target */}
+                <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-300 font-medium">Revenue Target</p>
+                      <p className="mt-0.5 text-xs text-slate-500">{data.days_remaining} days remaining</p>
+                    </div>
+                    <div className="h-10 w-10 rounded-2xl bg-indigo-500/10 ring-1 ring-indigo-400/20 flex items-center justify-center shrink-0">
+                      <svg className="h-5 w-5 text-indigo-300" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="1.7" />
+                        <circle cx="12" cy="12" r="2.5" fill="currentColor" />
+                      </svg>
+                    </div>
+                  </div>
+                  <p className="mt-3 text-2xl md:text-3xl font-extrabold tracking-tight text-slate-100">
+                    {formatCurrency(data.target_till_date)}
                   </p>
-                  <p className="mt-0.5 text-xs text-slate-500">Planned volume</p>
+                  <div className="mt-1 flex items-center gap-1.5 flex-wrap">
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-1 ${getPaceColor(data.turnover_pace_status)}`}>
+                      {paceLabel(data.turnover_pace_status)}
+                    </span>
+                    <span className="text-[11px] text-slate-400">Proj <span className="text-slate-300 font-medium">{formatCurrency(data.projected_turnover_eom)}</span></span>
+                  </div>
                 </div>
-                <div className="h-10 w-10 rounded-2xl bg-indigo-500/10 ring-1 ring-indigo-400/20 flex items-center justify-center">
-                  <svg
-                    className="h-5 w-5 text-indigo-300"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="1.7" />
-                    <circle cx="12" cy="12" r="2.5" fill="currentColor" />
-                  </svg>
-                </div>
-              </div>
-              <p className="mt-3 text-2xl md:text-3xl font-extrabold tracking-tight text-slate-100">
-                {formatCurrency(data.target_till_date)}
-              </p>
-              <p className="mt-1 text-[11px] uppercase tracking-[0.22em] text-slate-500">
-                PKR
-              </p>
-            </div>
 
-            {/* KPI: Transaction Target (static) */}
-            <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-[11px] uppercase tracking-[0.22em] text-slate-100">
-                    Transaction target
+                {/* Monthly Transaction Goal */}
+                <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-300 font-medium">Txn Goal</p>
+                      <p className="mt-0.5 text-xs text-slate-500">{data.days_remaining} days remaining</p>
+                    </div>
+                    <div className="h-10 w-10 rounded-2xl bg-violet-500/10 ring-1 ring-violet-400/20 flex items-center justify-center shrink-0">
+                      <svg className="h-5 w-5 text-violet-300" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 11L10 16L19 7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                  </div>
+                  <p className="mt-3 text-2xl md:text-3xl font-extrabold tracking-tight text-slate-100">
+                    {transactionTarget.toLocaleString()}
                   </p>
-                  <p className="mt-0.5 text-xs text-slate-500">Static</p>
+                  <div className="mt-1 flex items-center gap-1.5 flex-wrap">
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-1 ${getPaceColor(data.transactions_pace_status)}`}>
+                      {paceLabel(data.transactions_pace_status)}
+                    </span>
+                    <span className="text-[11px] text-slate-400">Proj <span className="text-slate-300 font-medium">{data.projected_transactions_eom.toLocaleString()}</span></span>
+                  </div>
                 </div>
-                <div className="h-10 w-10 rounded-2xl bg-violet-500/10 ring-1 ring-violet-400/20 flex items-center justify-center">
-                  <svg
-                    className="h-5 w-5 text-violet-300"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M5 11L10 16L19 7"
-                      stroke="currentColor"
-                      strokeWidth="1.7"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
+
               </div>
-              <p className="mt-3 text-2xl md:text-3xl font-extrabold tracking-tight text-slate-100">
-                {transactionTarget.toLocaleString()}
-              </p>
-              <p className="mt-1 text-[11px] uppercase tracking-[0.22em] text-slate-500">
-                Transactions
-              </p>
             </div>
           </section>
 
           {/* Content */}
           <section className="min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4">
-            {/* Transactions */}
+
+            {/* Terminal Table */}
             <div className="lg:col-span-8 rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 overflow-hidden flex flex-col min-h-0">
               <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="h-9 w-9 rounded-2xl bg-white/5 ring-1 ring-white/10 flex items-center justify-center">
-                    <svg
-                      className="h-5 w-5 text-slate-300"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M5 7H19M5 12H19M5 17H13"
-                        stroke="currentColor"
-                        strokeWidth="1.7"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
+                    <svg className="h-5 w-5 text-slate-300" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M5 7H19M5 12H19M5 17H13" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                   <div>
-                    <h2 className="text-sm md:text-base font-semibold text-slate-100">
-                      Daily Terminal Performance
-                    </h2>
-                    <p className="text-[11px] text-slate-500">Today&apos;s summary</p>
+                    <h2 className="text-sm md:text-base font-semibold text-slate-100">Terminal Breakdown</h2>
+                    <p className="text-[11px] text-slate-400">Each payment terminal · today only</p>
                   </div>
                 </div>
                 <div className="text-[11px] text-slate-500 font-medium">PKR</div>
@@ -429,66 +334,42 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
               {/* Mobile list */}
               <div className="md:hidden flex-1 min-h-0 overflow-auto p-3 space-y-2">
                 {data.terminal_stats.length === 0 && (
-                  <div className="h-full flex items-center justify-center text-sm text-slate-500">
-                    No terminal data available
-                  </div>
+                  <div className="h-full flex items-center justify-center text-sm text-slate-500">No transactions today</div>
                 )}
                 {data.terminal_stats.map((stat, idx) => (
-                  <div
-                    key={`${stat.point}-${idx}`}
-                    className="rounded-2xl p-3 ring-1 bg-white/5 ring-white/10"
-                  >
+                  <div key={`${stat.point}-${idx}`} className="rounded-2xl p-3 ring-1 bg-white/5 ring-white/10">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold text-slate-100 truncate">
-                          {stat.point}
-                        </p>
-                        <p className="mt-1 text-xs text-slate-400">
-                          {stat.transactions.toLocaleString()} transactions
-                        </p>
+                        <p className="text-sm font-semibold text-slate-100 truncate">{stat.point}</p>
+                        <p className="mt-1 text-xs text-slate-400">{stat.transactions.toLocaleString()} transactions</p>
                       </div>
-                      <div className="text-right shrink-0">
-                        <p className="text-sm font-semibold text-slate-100">
-                          {formatCurrency(stat.turnover)}
-                        </p>
-                      </div>
+                      <p className="text-sm font-semibold text-slate-100 shrink-0">{formatCurrency(stat.turnover)}</p>
                     </div>
                   </div>
                 ))}
               </div>
 
-              {/* Desktop table (scrollable, hidden scrollbar) */}
+              {/* Desktop table */}
               <div className="hidden md:block flex-1 min-h-0 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 <table className="min-w-full text-left">
                   <thead className="sticky top-0 bg-slate-950/60 backdrop-blur border-b border-white/10">
                     <tr className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
                       <th className="px-4 py-3 font-semibold">Terminal</th>
                       <th className="px-4 py-3 font-semibold text-right">Transactions</th>
-                      <th className="px-4 py-3 font-semibold text-right">Turnover</th>
+                      <th className="px-4 py-3 font-semibold text-right">Turnover (PKR)</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/10">
                     {data.terminal_stats.length === 0 && (
                       <tr>
-                        <td colSpan={3} className="px-4 py-10 text-center text-sm text-slate-500">
-                          No terminal data available
-                        </td>
+                        <td colSpan={3} className="px-4 py-10 text-center text-sm text-slate-500">No transactions today</td>
                       </tr>
                     )}
                     {data.terminal_stats.map((stat, idx) => (
-                      <tr
-                        key={`${stat.point}-${idx}`}
-                        className="transition hover:bg-white/5"
-                      >
-                        <td className="px-4 py-3 text-sm font-semibold text-slate-100">
-                          {stat.point}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-slate-400 text-right">
-                          {stat.transactions.toLocaleString()}
-                        </td>
-                        <td className="px-4 py-3 text-sm font-semibold text-slate-100 text-right">
-                          {formatCurrency(stat.turnover)}
-                        </td>
+                      <tr key={`${stat.point}-${idx}`} className="transition hover:bg-white/5">
+                        <td className="px-4 py-3 text-sm font-semibold text-slate-100">{stat.point}</td>
+                        <td className="px-4 py-3 text-sm text-slate-300 text-right">{stat.transactions.toLocaleString()}</td>
+                        <td className="px-4 py-3 text-sm font-semibold text-slate-100 text-right">{formatCurrency(stat.turnover)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -496,312 +377,115 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
               </div>
             </div>
 
-            {/* Tablet-only: show Target below transactions (not at top) */}
+            {/* Target Achievement — tablet */}
             <div className="hidden sm:block lg:hidden">
               <section className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 overflow-hidden flex flex-col">
                 <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
                   <div>
-                    <h2 className="text-sm md:text-base font-semibold text-slate-100">
-                      Target Achievement
-                    </h2>
-                    <p className="text-[11px] text-slate-500">Month to date</p>
+                    <h2 className="text-sm font-semibold text-slate-100">Monthly Target Progress</h2>
+                    <p className="text-[11px] text-slate-400">Day {data.days_elapsed} of {data.days_in_month} · {data.days_remaining} days left</p>
                   </div>
-                  <span className="text-[11px] font-semibold px-2 py-1 rounded-full bg-white/5 ring-1 ring-white/10 text-slate-300">
-                    MTD
-                  </span>
+                  <span className="text-[11px] font-semibold px-2 py-1 rounded-full bg-white/5 ring-1 ring-white/10 text-slate-300">MTD</span>
                 </div>
-
                 <div className="p-4 flex flex-col gap-4">
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                  <div className="flex items-center justify-center gap-6">
                     <div className="flex flex-col items-center gap-1">
                       <div className="relative" style={{ width: circleSize, height: circleSize }}>
                         <svg width={circleSize} height={circleSize} className="block">
                           <defs>
-                            <linearGradient id="targetGradTurnoverTablet" x1="0" y1="0" x2="1" y2="1">
+                            <linearGradient id="tgTurnT" x1="0" y1="0" x2="1" y2="1">
                               <stop offset="0%" stopColor={pct >= 80 ? '#34d399' : pct >= 50 ? '#fbbf24' : '#fb7185'} />
                               <stop offset="100%" stopColor={pct >= 80 ? '#22c55e' : pct >= 50 ? '#f59e0b' : '#f43f5e'} />
                             </linearGradient>
                           </defs>
-                          <circle
-                            cx={circleSize / 2}
-                            cy={circleSize / 2}
-                            r={r}
-                            stroke="rgba(255,255,255,0.10)"
-                            strokeWidth={strokeWidth}
-                            fill="transparent"
-                          />
-                          <circle
-                            cx={circleSize / 2}
-                            cy={circleSize / 2}
-                            r={r}
-                            stroke="url(#targetGradTurnoverTablet)"
-                            strokeWidth={strokeWidth}
-                            strokeLinecap="round"
-                            fill="transparent"
-                            strokeDasharray={`${dash} ${c - dash}`}
-                            transform={`rotate(-90 ${circleSize / 2} ${circleSize / 2})`}
-                          />
+                          <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="rgba(255,255,255,0.10)" strokeWidth={strokeWidth} fill="transparent" />
+                          <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="url(#tgTurnT)" strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent" strokeDasharray={`${dash} ${c-dash}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <p
-                            className="font-extrabold tracking-tight text-slate-100 leading-none tabular-nums"
-                            style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}
-                          >
-                            {pct.toFixed(1)}%
-                          </p>
-                          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
-                            Turnover
-                          </p>
+                          <p className="font-extrabold text-slate-100 leading-none tabular-nums" style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}>{pct.toFixed(1)}%</p>
+                          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">Turnover</p>
                         </div>
                       </div>
                     </div>
-
                     <div className="flex flex-col items-center gap-1">
                       <div className="relative" style={{ width: circleSize, height: circleSize }}>
                         <svg width={circleSize} height={circleSize} className="block">
                           <defs>
-                            <linearGradient id="targetGradTxnTablet" x1="0" y1="0" x2="1" y2="1">
+                            <linearGradient id="tgTxnT" x1="0" y1="0" x2="1" y2="1">
                               <stop offset="0%" stopColor={transactionPct >= 80 ? '#34d399' : transactionPct >= 50 ? '#fbbf24' : '#fb7185'} />
                               <stop offset="100%" stopColor={transactionPct >= 80 ? '#22c55e' : transactionPct >= 50 ? '#f59e0b' : '#f43f5e'} />
                             </linearGradient>
                           </defs>
-                          <circle
-                            cx={circleSize / 2}
-                            cy={circleSize / 2}
-                            r={r}
-                            stroke="rgba(255,255,255,0.10)"
-                            strokeWidth={strokeWidth}
-                            fill="transparent"
-                          />
-                          <circle
-                            cx={circleSize / 2}
-                            cy={circleSize / 2}
-                            r={r}
-                            stroke="url(#targetGradTxnTablet)"
-                            strokeWidth={strokeWidth}
-                            strokeLinecap="round"
-                            fill="transparent"
-                            strokeDasharray={`${transactionDash} ${c - transactionDash}`}
-                            transform={`rotate(-90 ${circleSize / 2} ${circleSize / 2})`}
-                          />
+                          <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="rgba(255,255,255,0.10)" strokeWidth={strokeWidth} fill="transparent" />
+                          <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="url(#tgTxnT)" strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent" strokeDasharray={`${transactionDash} ${c-transactionDash}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <p
-                            className="font-extrabold tracking-tight text-slate-100 leading-none tabular-nums"
-                            style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}
-                          >
-                            {transactionPct.toFixed(1)}%
-                          </p>
-                          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
-                            Transactions
-                          </p>
+                          <p className="font-extrabold text-slate-100 leading-none tabular-nums" style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}>{transactionPct.toFixed(1)}%</p>
+                          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">Transactions</p>
                         </div>
                       </div>
                     </div>
                   </div>
-
                   <div className="grid grid-cols-1 gap-3">
-                    <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-3 flex flex-col gap-2">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
-                            Turnover
-                          </p>
-                          <p className="mt-1 text-sm text-slate-400">
-                            {formatCurrency(data.turnover_till_date)} / {formatCurrency(data.target_till_date)}
-                          </p>
-                        </div>
-                        <p className="text-lg font-bold text-slate-100">
-                          {pct.toFixed(1)}%
-                        </p>
-                      </div>
-                      <div className="h-2 rounded-full bg-white/10 overflow-hidden">
-                        <div
-                          className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(pct)}`}
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-3 flex flex-col gap-2">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
-                            Transactions
-                          </p>
-                          <p className="mt-1 text-sm text-slate-400">
-                            {data.transactions_mtd.toLocaleString()} / {transactionTarget.toLocaleString()}
-                          </p>
-                        </div>
-                        <p className="text-lg font-bold text-slate-100">
-                          {transactionPct.toFixed(1)}%
-                        </p>
-                      </div>
-                      <div className="h-2 rounded-full bg-white/10 overflow-hidden">
-                        <div
-                          className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(transactionPct)}`}
-                          style={{ width: `${transactionPct}%` }}
-                        />
-                      </div>
-                    </div>
+                    <TurnoverBarRow />
+                    <TransactionsBarRow />
                   </div>
                 </div>
               </section>
             </div>
 
-            {/* Target Achievement (right side on large screens only) */}
+            {/* Target Achievement — desktop */}
             <div className="hidden lg:flex lg:flex-col lg:col-span-4 h-full">
               <section className="rounded-2xl bg-white/5 ring-1 ring-white/10 shadow-sm shadow-black/30 overflow-hidden flex flex-col flex-1">
                 <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
                   <div>
-                    <h2 className="text-sm md:text-base font-semibold text-slate-100">
-                      Target Achievement
-                    </h2>
-                    <p className="text-[11px] text-slate-500">Month to date</p>
+                    <h2 className="text-sm font-semibold text-slate-100">Monthly Target Progress</h2>
+                    <p className="text-[11px] text-slate-400">Day {data.days_elapsed} of {data.days_in_month} · {data.days_remaining} days left</p>
                   </div>
-                  <span className="text-[11px] font-semibold px-2 py-1 rounded-full bg-white/5 ring-1 ring-white/10 text-slate-300">
-                    MTD
-                  </span>
+                  <span className="text-[11px] font-semibold px-2 py-1 rounded-full bg-white/5 ring-1 ring-white/10 text-slate-300">MTD</span>
                 </div>
-
                 <div className="px-2 flex flex-col gap-4">
-                  {/* Dual circles: turnover + transactions */}
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-6" style={{ marginBottom: '30px'}}>
-                    {/* Turnover circle */}
+                  <div className="flex items-center justify-center gap-6" style={{ marginBottom: '30px' }}>
                     <div className="flex flex-col items-center gap-1">
                       <div className="relative scale-75" style={{ width: circleSize, height: circleSize }}>
                         <svg width={circleSize} height={circleSize} className="block">
                           <defs>
-                            <linearGradient id="targetGradTurnoverDesktop" x1="0" y1="0" x2="1" y2="1">
+                            <linearGradient id="tgTurnD" x1="0" y1="0" x2="1" y2="1">
                               <stop offset="0%" stopColor={pct >= 80 ? '#34d399' : pct >= 50 ? '#fbbf24' : '#fb7185'} />
                               <stop offset="100%" stopColor={pct >= 80 ? '#22c55e' : pct >= 50 ? '#f59e0b' : '#f43f5e'} />
                             </linearGradient>
                           </defs>
-                          <circle
-                            cx={circleSize / 2}
-                            cy={circleSize / 2}
-                            r={r}
-                            stroke="rgba(255,255,255,0.10)"
-                            strokeWidth={strokeWidth}
-                            fill="transparent"
-                          />
-                          <circle
-                            cx={circleSize / 2}
-                            cy={circleSize / 2}
-                            r={r}
-                            stroke="url(#targetGradTurnoverDesktop)"
-                            strokeWidth={strokeWidth}
-                            strokeLinecap="round"
-                            fill="transparent"
-                            strokeDasharray={`${dash} ${c - dash}`}
-                            transform={`rotate(-90 ${circleSize / 2} ${circleSize / 2})`}
-                          />
+                          <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="rgba(255,255,255,0.10)" strokeWidth={strokeWidth} fill="transparent" />
+                          <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="url(#tgTurnD)" strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent" strokeDasharray={`${dash} ${c-dash}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <p
-                            className="font-extrabold tracking-tight text-slate-100 leading-none tabular-nums"
-                            style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}
-                          >
-                            {pct.toFixed(1)}%
-                          </p>
-                          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
-                            Turnover
-                          </p>
+                          <p className="font-extrabold text-slate-100 leading-none tabular-nums" style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}>{pct.toFixed(1)}%</p>
+                          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">Turnover</p>
                         </div>
                       </div>
                     </div>
-
-                    {/* Transactions circle */}
                     <div className="flex flex-col items-center gap-1">
                       <div className="relative scale-75" style={{ width: circleSize, height: circleSize }}>
                         <svg width={circleSize} height={circleSize} className="block">
                           <defs>
-                            <linearGradient id="targetGradTxnDesktop" x1="0" y1="0" x2="1" y2="1">
+                            <linearGradient id="tgTxnD" x1="0" y1="0" x2="1" y2="1">
                               <stop offset="0%" stopColor={transactionPct >= 80 ? '#34d399' : transactionPct >= 50 ? '#fbbf24' : '#fb7185'} />
                               <stop offset="100%" stopColor={transactionPct >= 80 ? '#22c55e' : transactionPct >= 50 ? '#f59e0b' : '#f43f5e'} />
                             </linearGradient>
                           </defs>
-                          <circle
-                            cx={circleSize / 2}
-                            cy={circleSize / 2}
-                            r={r}
-                            stroke="rgba(255,255,255,0.10)"
-                            strokeWidth={strokeWidth}
-                            fill="transparent"
-                          />
-                          <circle
-                            cx={circleSize / 2}
-                            cy={circleSize / 2}
-                            r={r}
-                            stroke="url(#targetGradTxnDesktop)"
-                            strokeWidth={strokeWidth}
-                            strokeLinecap="round"
-                            fill="transparent"
-                            strokeDasharray={`${transactionDash} ${c - transactionDash}`}
-                            transform={`rotate(-90 ${circleSize / 2} ${circleSize / 2})`}
-                          />
+                          <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="rgba(255,255,255,0.10)" strokeWidth={strokeWidth} fill="transparent" />
+                          <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="url(#tgTxnD)" strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent" strokeDasharray={`${transactionDash} ${c-transactionDash}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <p
-                            className="font-extrabold tracking-tight text-slate-100 leading-none tabular-nums"
-                            style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}
-                          >
-                            {transactionPct.toFixed(1)}%
-                          </p>
-                          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
-                            Transactions
-                          </p>
+                          <p className="font-extrabold text-slate-100 leading-none tabular-nums" style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}>{transactionPct.toFixed(1)}%</p>
+                          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">Transactions</p>
                         </div>
                       </div>
                     </div>
                   </div>
-
                   <div className="grid grid-cols-1 gap-3">
-                    {/* Turnover achievement */}
-                    <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-3 flex flex-col gap-2">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
-                            Turnover
-                          </p>
-                          <p className="mt-1 text-sm text-slate-400">
-                            {formatCurrency(data.turnover_till_date)} / {formatCurrency(data.target_till_date)}
-                          </p>
-                        </div>
-                        <p className="text-lg font-bold text-slate-100">
-                          {pct.toFixed(1)}%
-                        </p>
-                      </div>
-                      <div className="h-2 rounded-full bg-white/10 overflow-hidden">
-                        <div
-                          className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(pct)}`}
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Transactions achievement */}
-                    <div className="rounded-2xl bg-white/5 ring-1 ring-white/10 p-3 flex flex-col gap-2">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
-                            Transactions
-                          </p>
-                          <p className="mt-1 text-sm text-slate-400">
-                            {data.transactions_mtd.toLocaleString()} / {transactionTarget.toLocaleString()}
-                          </p>
-                        </div>
-                        <p className="text-lg font-bold text-slate-100">
-                          {transactionPct.toFixed(1)}%
-                        </p>
-                      </div>
-                      <div className="h-2 rounded-full bg-white/10 overflow-hidden">
-                        <div
-                          className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(transactionPct)}`}
-                          style={{ width: `${transactionPct}%` }}
-                        />
-                      </div>
-                    </div>
+                    <TurnoverBarRow />
+                    <TransactionsBarRow />
                   </div>
                 </div>
               </section>
@@ -815,5 +499,3 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
 };
 
 export default DashboardTailwind;
-
-

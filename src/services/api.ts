@@ -19,6 +19,18 @@ export interface DashboardData {
   transactions_mtd: number;
   target_till_date: number;
   target_achievement_percentage: number;
+  // Pace-to-target
+  days_elapsed: number;
+  days_in_month: number;
+  days_remaining: number;
+  daily_run_rate_turnover: number;
+  projected_turnover_eom: number;
+  turnover_needed_per_day: number;
+  turnover_pace_status: 'ahead' | 'on_track' | 'behind';
+  daily_run_rate_transactions: number;
+  projected_transactions_eom: number;
+  transactions_needed_per_day: number;
+  transactions_pace_status: 'ahead' | 'on_track' | 'behind';
 }
 
 const isDashboardData = (data: any): data is DashboardData => {
