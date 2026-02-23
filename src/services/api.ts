@@ -1,9 +1,7 @@
 import axios from 'axios';
 
-// Backend base URL is driven entirely by environment configuration.
-// In production (e.g. Vercel), set REACT_APP_API_URL to your backend URL.
-// For local development, it falls back to http://localhost:8000.
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_KEY = process.env.REACT_APP_API_KEY || '';
 
 export interface TerminalStats {
   point: string;
@@ -51,9 +49,10 @@ export const fetchDashboardData = async (): Promise<DashboardData> => {
   try {
     const response = await axios.get<DashboardData>(`${API_BASE_URL}/api/dashboard`, {
       timeout: 8000,
+      headers: API_KEY ? { Authorization: `Bearer ${API_KEY}` } : {},
     });
-    const data = response.data;
 
+    const data = response.data;
     if (!isDashboardData(data)) {
       console.error('API response has unexpected shape:', data);
       throw new Error('Invalid dashboard data received from server');
@@ -65,4 +64,3 @@ export const fetchDashboardData = async (): Promise<DashboardData> => {
     throw error;
   }
 };
-
