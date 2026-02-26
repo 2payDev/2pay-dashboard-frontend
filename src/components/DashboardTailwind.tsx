@@ -71,9 +71,9 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data, theme, onToggleThem
   const dashMob = (pct / 100) * cMob;
   const transactionDashMob = (transactionPct / 100) * cMob;
 
-  // Desktop circles — very small, side by side
-  const circleSizeDesk = 52;
-  const strokeWidthDesk = 5;
+  // Desktop circles — larger for big screens
+  const circleSizeDesk = 76;
+  const strokeWidthDesk = 6;
   const rDesk = (circleSizeDesk - strokeWidthDesk) / 2;
   const cDesk = 2 * Math.PI * rDesk;
   const dashDesk = (pct / 100) * cDesk;
@@ -119,11 +119,18 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data, theme, onToggleThem
     </div>
   );
 
-  // Circle for desktop — small circle with label+badge below, centered
+  // Circle for desktop — larger, label above circle, badge below
   const CircleChartDesk = ({ id, value, dash: d, label, paceStatus }: {
     id: string; value: number; dash: number; label: string; paceStatus: string
   }) => (
-    <div className="flex flex-col items-center gap-1 shrink-0">
+    <div className="flex flex-col items-center gap-2 shrink-0">
+      <p
+        className={`text-[9px] font-nav uppercase tracking-[0.18em] ${
+          isDark ? 'text-slate-300' : 'text-brand-body'
+        }`}
+      >
+        {label}
+      </p>
       <div className="relative" style={{ width: circleSizeDesk, height: circleSizeDesk }}>
         <svg width={circleSizeDesk} height={circleSizeDesk} className="block" viewBox={`0 0 ${circleSizeDesk} ${circleSizeDesk}`}>
           <CircleGrad id={id} pctValue={value} />
@@ -136,19 +143,12 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data, theme, onToggleThem
             className={`font-heading font-extrabold leading-none tabular-nums ${
               isDark ? 'text-emerald-300' : 'text-brand-text'
             }`}
-            style={{ fontSize: Math.max(10, Math.floor(circleSizeDesk * 0.22)) }}
+            style={{ fontSize: Math.max(12, Math.floor(circleSizeDesk * 0.24)) }}
           >
             {value.toFixed(1)}%
           </p>
         </div>
       </div>
-      <p
-        className={`text-[8px] font-nav uppercase tracking-[0.12em] mt-2 ${
-          isDark ? 'text-slate-400' : 'text-brand-body'
-        }`}
-      >
-        {label}
-      </p>
       <span className={`text-[8px] font-nav font-bold px-1.5 py-0.5 rounded-full ${getPaceColor(paceStatus)}`}>
         {paceLabel(paceStatus)}
       </span>
