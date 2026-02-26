@@ -37,8 +37,9 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
   const transactionPctRaw = transactionTarget > 0 ? (data.transactions_mtd / transactionTarget) * 100 : 0;
   const transactionPct = Math.max(0, Math.min(100, transactionPctRaw));
 
-  const circleSize = 132;
-  const strokeWidth = 12;
+  // ── SMALLER circles so everything fits on LCD without overlap ──
+  const circleSize = 100;
+  const strokeWidth = 9;
   const r = (circleSize - strokeWidth) / 2;
   const c = 2 * Math.PI * r;
   const dash = (pct / 100) * c;
@@ -57,32 +58,28 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
   const cardShadow = 'shadow-[0_2px_16px_-3px_rgba(20,98,82,0.10),0_1px_4px_rgba(0,0,0,0.04)]';
   const iconContainer = 'bg-gradient-to-br from-brand-icon to-[#d6ebe5]';
 
-  // Reusable progress bar rows
   const TurnoverBarRow = () => (
-    <div className={`bg-white rounded-2xl border border-brand-border ${cardShadow} p-3 flex flex-col gap-2`}>
+    <div className={`bg-white rounded-2xl border border-brand-border ${cardShadow} p-2.5 flex flex-col gap-1.5`}>
       <div className="flex items-center justify-between gap-2">
-        {/* left: label + value — min-w-0 prevents overflow */}
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] uppercase tracking-[0.12em] sm:tracking-[0.22em] font-nav text-brand-body truncate">
+          <p className="text-[10px] uppercase tracking-[0.12em] font-nav text-brand-body truncate">
             Monthly Turnover
           </p>
-          <p className="mt-1 text-xs sm:text-sm font-body font-medium text-brand-heading truncate">
+          <p className="mt-0.5 text-[11px] font-body font-medium text-brand-heading truncate">
             {formatCurrency(data.turnover_till_date)} / {formatCurrency(data.target_till_date)}
           </p>
         </div>
-        {/* right: badge + % — shrink-0 keeps it from collapsing */}
-        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-          <span className={`text-[10px] font-nav font-bold px-1.5 py-0.5 rounded-full ${getPaceColor(data.turnover_pace_status)}`}>
+        <div className="flex items-center gap-1 shrink-0">
+          <span className={`text-[9px] font-nav font-bold px-1.5 py-0.5 rounded-full ${getPaceColor(data.turnover_pace_status)}`}>
             {paceLabel(data.turnover_pace_status)}
           </span>
-          <p className="text-base sm:text-lg font-heading font-bold text-brand-text tabular-nums">{pct.toFixed(1)}%</p>
+          <p className="text-sm font-heading font-bold text-brand-text tabular-nums">{pct.toFixed(1)}%</p>
         </div>
       </div>
-      <div className="h-2.5 rounded-full bg-[#e5edeb] overflow-hidden">
+      <div className="h-2 rounded-full bg-[#e5edeb] overflow-hidden">
         <div className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(pct)}`} style={{ width: `${pct}%` }} />
       </div>
-      {/* footnote: flex-wrap so it breaks onto 2 lines on narrow screens */}
-      <div className="flex flex-wrap gap-x-2 gap-y-0.5 text-[11px] font-body text-brand-body">
+      <div className="flex flex-wrap gap-x-2 gap-y-0.5 text-[10px] font-body text-brand-body">
         <span>Need <span className="text-brand-green font-semibold">{formatCurrency(data.turnover_needed_per_day)}/day</span></span>
         <span>Proj <span className="text-brand-green font-semibold">{formatCurrency(data.projected_turnover_eom)}</span></span>
       </div>
@@ -90,29 +87,48 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
   );
 
   const TransactionsBarRow = () => (
-    <div className={`bg-white rounded-2xl border border-brand-border ${cardShadow} p-3 flex flex-col gap-2`}>
+    <div className={`bg-white rounded-2xl border border-brand-border ${cardShadow} p-2.5 flex flex-col gap-1.5`}>
       <div className="flex items-center justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] uppercase tracking-[0.12em] sm:tracking-[0.22em] font-nav text-brand-body truncate">
+          <p className="text-[10px] uppercase tracking-[0.12em] font-nav text-brand-body truncate">
             Monthly Transactions
           </p>
-          <p className="mt-1 text-xs sm:text-sm font-body font-medium text-brand-heading truncate">
+          <p className="mt-0.5 text-[11px] font-body font-medium text-brand-heading truncate">
             {data.transactions_mtd.toLocaleString()} / {transactionTarget.toLocaleString()}
           </p>
         </div>
-        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-          <span className={`text-[10px] font-nav font-bold px-1.5 py-0.5 rounded-full ${getPaceColor(data.transactions_pace_status)}`}>
+        <div className="flex items-center gap-1 shrink-0">
+          <span className={`text-[9px] font-nav font-bold px-1.5 py-0.5 rounded-full ${getPaceColor(data.transactions_pace_status)}`}>
             {paceLabel(data.transactions_pace_status)}
           </span>
-          <p className="text-base sm:text-lg font-heading font-bold text-brand-text tabular-nums">{transactionPct.toFixed(1)}%</p>
+          <p className="text-sm font-heading font-bold text-brand-text tabular-nums">{transactionPct.toFixed(1)}%</p>
         </div>
       </div>
-      <div className="h-2.5 rounded-full bg-[#e5edeb] overflow-hidden">
+      <div className="h-2 rounded-full bg-[#e5edeb] overflow-hidden">
         <div className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(transactionPct)}`} style={{ width: `${transactionPct}%` }} />
       </div>
-      <div className="flex flex-wrap gap-x-2 gap-y-0.5 text-[11px] font-body text-brand-body">
+      <div className="flex flex-wrap gap-x-2 gap-y-0.5 text-[10px] font-body text-brand-body">
         <span>Need <span className="text-brand-green font-semibold">{Math.ceil(data.transactions_needed_per_day)}/day</span></span>
         <span>Proj <span className="text-brand-green font-semibold">{data.projected_transactions_eom.toLocaleString()}</span></span>
+      </div>
+    </div>
+  );
+
+  // Reusable circle component to avoid repetition
+  const CircleChart = ({ id, value, dash: d, label }: { id: string; value: number; dash: number; label: string }) => (
+    <div className="relative shrink-0" style={{ width: circleSize, height: circleSize }}>
+      <svg width={circleSize} height={circleSize} className="block" viewBox={`0 0 ${circleSize} ${circleSize}`}>
+        <CircleGrad id={id} pctValue={value} />
+        <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke={circleTrack} strokeWidth={strokeWidth} fill="transparent" />
+        <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke={`url(#${id})`} strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent"
+          strokeDasharray={`${d} ${c - d}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+        <p className="font-heading font-extrabold text-brand-text leading-none tabular-nums"
+          style={{ fontSize: Math.max(14, Math.floor(circleSize * 0.20)) }}>
+          {value.toFixed(1)}%
+        </p>
+        <p className="text-[8px] font-nav uppercase tracking-[0.15em] text-brand-body mt-0.5">{label}</p>
       </div>
     </div>
   );
@@ -147,7 +163,6 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
               </span>
               <span className="text-[11px] font-nav font-medium text-emerald-300 uppercase tracking-wide">Live</span>
             </div>
-            {/* Live dot only on mobile, no text */}
             <span className="relative flex h-2 w-2 sm:hidden">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
@@ -174,41 +189,19 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
               </div>
               <span className="text-[10px] font-nav font-semibold px-2 py-1 rounded-full bg-brand-icon text-brand-green ring-1 ring-brand-green/20">MTD</span>
             </div>
-            <div className="p-4 flex flex-col gap-4">
+            <div className="p-3 flex flex-col gap-3">
               <div className="flex items-center justify-center gap-4 flex-wrap">
-                {/* Turnover circle */}
-                <div className="relative shrink-0" style={{ width: circleSize, height: circleSize }}>
-                  <svg width={circleSize} height={circleSize} className="block" viewBox={`0 0 ${circleSize} ${circleSize}`}>
-                    <CircleGrad id="cgTurnMob" pctValue={pct} />
-                    <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke={circleTrack} strokeWidth={strokeWidth} fill="transparent" />
-                    <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="url(#cgTurnMob)" strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent" strokeDasharray={`${dash} ${c-dash}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <p className="font-heading font-extrabold text-brand-text leading-none tabular-nums" style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}>{pct.toFixed(1)}%</p>
-                    <p className="text-[11px] font-nav uppercase tracking-[0.22em] text-brand-body mt-0.5">Turnover</p>
-                  </div>
-                </div>
-                {/* Transactions circle */}
-                <div className="relative shrink-0" style={{ width: circleSize, height: circleSize }}>
-                  <svg width={circleSize} height={circleSize} className="block" viewBox={`0 0 ${circleSize} ${circleSize}`}>
-                    <CircleGrad id="cgTxnMob" pctValue={transactionPct} />
-                    <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke={circleTrack} strokeWidth={strokeWidth} fill="transparent" />
-                    <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="url(#cgTxnMob)" strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent" strokeDasharray={`${transactionDash} ${c-transactionDash}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <p className="font-heading font-extrabold text-brand-text leading-none tabular-nums" style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}>{transactionPct.toFixed(1)}%</p>
-                    <p className="text-[11px] font-nav uppercase tracking-[0.22em] text-brand-body mt-0.5">Transactions</p>
-                  </div>
-                </div>
+                <CircleChart id="cgTurnMob" value={pct} dash={dash} label="Turnover" />
+                <CircleChart id="cgTxnMob" value={transactionPct} dash={transactionDash} label="Transactions" />
               </div>
-              <div className="grid grid-cols-1 gap-3">
+              <div className="grid grid-cols-1 gap-2">
                 <TurnoverBarRow />
                 <TransactionsBarRow />
               </div>
             </div>
           </section>
 
-          {/* ── KPI Row — TODAY / THIS MONTH ── */}
+          {/* ── KPI Row ── */}
           <section className="flex flex-col lg:flex-row gap-3 sm:gap-4">
 
             {/* TODAY */}
@@ -218,8 +211,6 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                 Today
               </p>
               <div className="grid grid-cols-2 gap-2 sm:gap-4">
-
-                {/* Today's Transactions */}
                 <div className={`bg-white rounded-2xl border border-brand-border border-t-2 border-t-brand-green ${cardShadow} p-3 sm:p-4`}>
                   <div className="flex items-start justify-between gap-1.5 sm:gap-2">
                     <div className="min-w-0 flex-1">
@@ -227,7 +218,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                       <p className="mt-0.5 text-[10px] sm:text-xs font-body text-brand-body truncate">Processed today</p>
                     </div>
                     <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-xl ${iconContainer} flex items-center justify-center shrink-0`}>
-                      <svg className="h-4 w-4 sm:h-5 sm:w-5 text-brand-green" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <svg className="h-4 w-4 sm:h-5 sm:w-5 text-brand-green" viewBox="0 0 24 24" fill="none">
                         <path d="M8 7H20M8 7L11 4M8 7L11 10M16 17H4M16 17L13 14M16 17L13 20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
@@ -240,15 +231,14 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                   </p>
                 </div>
 
-                {/* Today's Turnover */}
                 <div className={`bg-white rounded-2xl border border-brand-border border-t-2 border-t-brand-green ${cardShadow} p-3 sm:p-4`}>
                   <div className="flex items-start justify-between gap-1.5 sm:gap-2">
                     <div className="min-w-0 flex-1">
                       <p className="text-[10px] sm:text-[11px] font-nav uppercase tracking-tight sm:tracking-[0.22em] text-brand-body truncate">Turnover</p>
-                      <p className="mt-0.5 text-[10px] sm:text-xs font-body text-brand-body truncate">Revenue today</p>
+                      <p className="mt-0.5 text-[10px] sm:text-xs font-body text-brand-body truncate">Turnover today</p>
                     </div>
                     <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-xl ${iconContainer} flex items-center justify-center shrink-0`}>
-                      <svg className="h-4 w-4 sm:h-5 sm:w-5 text-brand-dark" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <svg className="h-4 w-4 sm:h-5 sm:w-5 text-brand-dark" viewBox="0 0 24 24" fill="none">
                         <path d="M12 4V20M8 8H12C14.2091 8 16 9.79086 16 12C16 14.2091 14.2091 16 12 16H8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
@@ -260,7 +250,6 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                     <span className="text-brand-green font-semibold">{formatCurrency(data.turnover_till_date)}</span> this month
                   </p>
                 </div>
-
               </div>
             </div>
 
@@ -271,16 +260,14 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                 This Month<span className="hidden sm:inline"> — Day {data.days_elapsed} of {data.days_in_month}</span>
               </p>
               <div className="grid grid-cols-2 gap-2 sm:gap-4">
-
-                {/* Revenue Target */}
                 <div className={`bg-white rounded-2xl border border-brand-border border-t-2 border-t-brand-dark ${cardShadow} p-3 sm:p-4`}>
                   <div className="flex items-start justify-between gap-1.5 sm:gap-2">
                     <div className="min-w-0 flex-1">
-                      <p className="text-[10px] sm:text-[11px] font-nav uppercase tracking-tight sm:tracking-[0.22em] text-brand-body truncate">Rev. Target</p>
+                      <p className="text-[10px] sm:text-[11px] font-nav uppercase tracking-tight sm:tracking-[0.22em] text-brand-body truncate">Turnover Target</p>
                       <p className="mt-0.5 text-[10px] sm:text-xs font-body text-brand-body truncate">{data.days_remaining} days left</p>
                     </div>
                     <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-xl ${iconContainer} flex items-center justify-center shrink-0`}>
-                      <svg className="h-4 w-4 sm:h-5 sm:w-5 text-brand-green" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <svg className="h-4 w-4 sm:h-5 sm:w-5 text-brand-green" viewBox="0 0 24 24" fill="none">
                         <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="1.7" />
                         <circle cx="12" cy="12" r="2.5" fill="currentColor" />
                       </svg>
@@ -299,7 +286,6 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                   </div>
                 </div>
 
-                {/* Transaction Goal */}
                 <div className={`bg-white rounded-2xl border border-brand-border border-t-2 border-t-brand-dark ${cardShadow} p-3 sm:p-4`}>
                   <div className="flex items-start justify-between gap-1.5 sm:gap-2">
                     <div className="min-w-0 flex-1">
@@ -307,7 +293,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                       <p className="mt-0.5 text-[10px] sm:text-xs font-body text-brand-body truncate">{data.days_remaining} days left</p>
                     </div>
                     <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-xl ${iconContainer} flex items-center justify-center shrink-0`}>
-                      <svg className="h-4 w-4 sm:h-5 sm:w-5 text-brand-dark" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <svg className="h-4 w-4 sm:h-5 sm:w-5 text-brand-dark" viewBox="0 0 24 24" fill="none">
                         <path d="M5 11L10 16L19 7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
@@ -324,7 +310,6 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                     </span>
                   </div>
                 </div>
-
               </div>
             </div>
           </section>
@@ -337,7 +322,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
               <div className="px-4 py-3 border-b border-brand-border flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className={`h-9 w-9 rounded-xl ${iconContainer} flex items-center justify-center shrink-0`}>
-                    <svg className="h-5 w-5 text-brand-green" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg className="h-5 w-5 text-brand-green" viewBox="0 0 24 24" fill="none">
                       <path d="M5 7H19M5 12H19M5 17H13" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
@@ -405,32 +390,12 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                   </div>
                   <span className="text-[10px] font-nav font-semibold px-2 py-1 rounded-full bg-brand-icon text-brand-green ring-1 ring-brand-green/20">MTD</span>
                 </div>
-                <div className="p-4 flex flex-col gap-4">
-                  <div className="flex items-center justify-center gap-6">
-                    <div className="relative" style={{ width: circleSize, height: circleSize }}>
-                      <svg width={circleSize} height={circleSize} className="block">
-                        <CircleGrad id="cgTurnTab" pctValue={pct} />
-                        <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke={circleTrack} strokeWidth={strokeWidth} fill="transparent" />
-                        <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="url(#cgTurnTab)" strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent" strokeDasharray={`${dash} ${c-dash}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
-                      </svg>
-                      <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <p className="font-heading font-extrabold text-brand-text leading-none tabular-nums" style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}>{pct.toFixed(1)}%</p>
-                        <p className="text-[11px] font-nav uppercase tracking-[0.22em] text-brand-body">Turnover</p>
-                      </div>
-                    </div>
-                    <div className="relative" style={{ width: circleSize, height: circleSize }}>
-                      <svg width={circleSize} height={circleSize} className="block">
-                        <CircleGrad id="cgTxnTab" pctValue={transactionPct} />
-                        <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke={circleTrack} strokeWidth={strokeWidth} fill="transparent" />
-                        <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="url(#cgTxnTab)" strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent" strokeDasharray={`${transactionDash} ${c-transactionDash}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
-                      </svg>
-                      <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <p className="font-heading font-extrabold text-brand-text leading-none tabular-nums" style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}>{transactionPct.toFixed(1)}%</p>
-                        <p className="text-[11px] font-nav uppercase tracking-[0.22em] text-brand-body">Transactions</p>
-                      </div>
-                    </div>
+                <div className="p-3 flex flex-col gap-3">
+                  <div className="flex items-center justify-center gap-4">
+                    <CircleChart id="cgTurnTab" value={pct} dash={dash} label="Turnover" />
+                    <CircleChart id="cgTxnTab" value={transactionPct} dash={transactionDash} label="Transactions" />
                   </div>
-                  <div className="grid grid-cols-1 gap-3">
+                  <div className="grid grid-cols-1 gap-2">
                     <TurnoverBarRow />
                     <TransactionsBarRow />
                   </div>
@@ -441,39 +406,22 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
             {/* Target Achievement — desktop */}
             <div className="hidden lg:flex lg:flex-col lg:col-span-4 h-full">
               <section className={`bg-white rounded-2xl border border-brand-border ${cardShadow} overflow-hidden flex flex-col flex-1`}>
-                <div className="px-4 py-3 border-b border-brand-border flex items-center justify-between">
+                <div className="px-4 py-3 border-b border-brand-border flex items-center justify-between shrink-0">
                   <div>
                     <h2 className="text-sm font-heading font-semibold text-brand-heading">Monthly Target Progress</h2>
                     <p className="text-[11px] font-body text-brand-body">Day {data.days_elapsed} of {data.days_in_month} · {data.days_remaining} days left</p>
                   </div>
                   <span className="text-[10px] font-nav font-semibold px-2 py-1 rounded-full bg-brand-icon text-brand-green ring-1 ring-brand-green/20">MTD</span>
                 </div>
-                <div className="px-3 flex flex-col gap-4 flex-1">
-                  <div className="flex items-center justify-center gap-4" style={{ marginBottom: '16px' }}>
-                    <div className="relative scale-75 shrink-0" style={{ width: circleSize, height: circleSize }}>
-                      <svg width={circleSize} height={circleSize} className="block">
-                        <CircleGrad id="cgTurnDesk" pctValue={pct} />
-                        <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke={circleTrack} strokeWidth={strokeWidth} fill="transparent" />
-                        <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="url(#cgTurnDesk)" strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent" strokeDasharray={`${dash} ${c-dash}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
-                      </svg>
-                      <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <p className="font-heading font-extrabold text-brand-text leading-none tabular-nums" style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}>{pct.toFixed(1)}%</p>
-                        <p className="text-[11px] font-nav uppercase tracking-[0.22em] text-brand-body">Turnover</p>
-                      </div>
-                    </div>
-                    <div className="relative scale-75 shrink-0" style={{ width: circleSize, height: circleSize }}>
-                      <svg width={circleSize} height={circleSize} className="block">
-                        <CircleGrad id="cgTxnDesk" pctValue={transactionPct} />
-                        <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke={circleTrack} strokeWidth={strokeWidth} fill="transparent" />
-                        <circle cx={circleSize/2} cy={circleSize/2} r={r} stroke="url(#cgTxnDesk)" strokeWidth={strokeWidth} strokeLinecap="round" fill="transparent" strokeDasharray={`${transactionDash} ${c-transactionDash}`} transform={`rotate(-90 ${circleSize/2} ${circleSize/2})`} />
-                      </svg>
-                      <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <p className="font-heading font-extrabold text-brand-text leading-none tabular-nums" style={{ fontSize: Math.max(22, Math.floor(circleSize * 0.28)) }}>{transactionPct.toFixed(1)}%</p>
-                        <p className="text-[11px] font-nav uppercase tracking-[0.22em] text-brand-body">Transactions</p>
-                      </div>
-                    </div>
+                {/* overflow-hidden ensures nothing bleeds out of the card */}
+                <div className="px-3 py-3 flex flex-col gap-3 flex-1 overflow-hidden">
+                  {/* Circles row — centered, no scale transform needed since circleSize is already small */}
+                  <div className="flex items-center justify-center gap-4 shrink-0">
+                    <CircleChart id="cgTurnDesk" value={pct} dash={dash} label="Turnover" />
+                    <CircleChart id="cgTxnDesk" value={transactionPct} dash={transactionDash} label="Transactions" />
                   </div>
-                  <div className="grid grid-cols-1 gap-3">
+                  {/* Progress bars — take remaining space, won't overflow */}
+                  <div className="grid grid-cols-1 gap-2 overflow-hidden">
                     <TurnoverBarRow />
                     <TransactionsBarRow />
                   </div>
