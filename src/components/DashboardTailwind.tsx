@@ -103,7 +103,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
           </p>
         </div>
       </div>
-      <p className="text-[8px] font-nav uppercase tracking-[0.12em] text-brand-body">{label}</p>
+      <p className="text-[8px] font-nav uppercase tracking-[0.12em] text-brand-body mt-2">{label}</p>
       <span className={`text-[8px] font-nav font-bold px-1.5 py-0.5 rounded-full ${getPaceColor(paceStatus)}`}>
         {paceLabel(paceStatus)}
       </span>
@@ -424,7 +424,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data }) => {
                 <div className="px-3 py-3 flex flex-col gap-3 flex-1 overflow-hidden">
 
                   {/* Two circles side by side — small size */}
-                  <div className="flex items-center justify-center gap-6 shrink-0">
+                  <div className="flex items-center justify-center gap-6 shrink-0 pt-3">
                     <CircleChartDesk
                       id="cgTurnDesk"
                       value={pct}
