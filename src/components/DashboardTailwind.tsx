@@ -28,6 +28,8 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data, theme, onToggleThem
   const iconContainer = isDark
     ? 'bg-gradient-to-br from-slate-800 to-slate-700'
     : 'bg-gradient-to-br from-brand-icon to-[#d6ebe5]';
+  const primaryIcon = isDark ? 'text-emerald-300' : 'text-brand-green';
+  const secondaryIcon = isDark ? 'text-emerald-200' : 'text-brand-dark';
 
   const cardShadow = isDark
     ? 'shadow-[0_10px_40px_rgba(0,0,0,0.65)]'
@@ -318,7 +320,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data, theme, onToggleThem
                       <p className={`mt-0.5 text-[10px] sm:text-xs font-body truncate ${bodyText}`}>Processed today</p>
                     </div>
                     <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-xl ${iconContainer} flex items-center justify-center shrink-0`}>
-                      <svg className="h-4 w-4 sm:h-5 sm:w-5 text-brand-green" viewBox="0 0 24 24" fill="none">
+                      <svg className={`h-4 w-4 sm:h-5 sm:w-5 ${primaryIcon}`} viewBox="0 0 24 24" fill="none">
                         <path d="M8 7H20M8 7L11 4M8 7L11 10M16 17H4M16 17L13 14M16 17L13 20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
@@ -341,7 +343,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data, theme, onToggleThem
                       <p className={`mt-0.5 text-[10px] sm:text-xs font-body truncate ${bodyText}`}>Turnover today</p>
                     </div>
                     <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-xl ${iconContainer} flex items-center justify-center shrink-0`}>
-                      <svg className="h-4 w-4 sm:h-5 sm:w-5 text-brand-dark" viewBox="0 0 24 24" fill="none">
+                      <svg className={`h-4 w-4 sm:h-5 sm:w-5 ${secondaryIcon}`} viewBox="0 0 24 24" fill="none">
                         <path d="M12 4V20M8 8H12C14.2091 8 16 9.79086 16 12C16 14.2091 14.2091 16 12 16H8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
@@ -374,7 +376,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data, theme, onToggleThem
                       <p className={`mt-0.5 text-[10px] sm:text-xs font-body truncate ${bodyText}`}>{data.days_remaining} days left</p>
                     </div>
                     <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-xl ${iconContainer} flex items-center justify-center shrink-0`}>
-                      <svg className="h-4 w-4 sm:h-5 sm:w-5 text-brand-green" viewBox="0 0 24 24" fill="none">
+                      <svg className={`h-4 w-4 sm:h-5 sm:w-5 ${primaryIcon}`} viewBox="0 0 24 24" fill="none">
                         <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="1.7" />
                         <circle cx="12" cy="12" r="2.5" fill="currentColor" />
                       </svg>
@@ -403,7 +405,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data, theme, onToggleThem
                       <p className={`mt-0.5 text-[10px] sm:text-xs font-body truncate ${bodyText}`}>{data.days_remaining} days left</p>
                     </div>
                     <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-xl ${iconContainer} flex items-center justify-center shrink-0`}>
-                      <svg className="h-4 w-4 sm:h-5 sm:w-5 text-brand-dark" viewBox="0 0 24 24" fill="none">
+                      <svg className={`h-4 w-4 sm:h-5 sm:w-5 ${secondaryIcon}`} viewBox="0 0 24 24" fill="none">
                         <path d="M5 11L10 16L19 7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
@@ -436,7 +438,7 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data, theme, onToggleThem
               <div className="px-4 py-3 border-b border-brand-border flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className={`h-9 w-9 rounded-xl ${iconContainer} flex items-center justify-center shrink-0`}>
-                    <svg className="h-5 w-5 text-brand-green" viewBox="0 0 24 24" fill="none">
+                    <svg className={`h-5 w-5 ${primaryIcon}`} viewBox="0 0 24 24" fill="none">
                       <path d="M5 7H19M5 12H19M5 17H13" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
