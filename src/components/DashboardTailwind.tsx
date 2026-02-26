@@ -149,9 +149,6 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data, theme, onToggleThem
           </p>
         </div>
       </div>
-      <span className={`text-[8px] font-nav font-bold px-1.5 py-0.5 rounded-full ${getPaceColor(paceStatus)}`}>
-        {paceLabel(paceStatus)}
-      </span>
     </div>
   );
 
