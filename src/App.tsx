@@ -7,6 +7,7 @@ const App: React.FC = () => {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   const loadData = async () => {
     try {
@@ -19,6 +20,29 @@ const App: React.FC = () => {
       setLoading(false);
       console.error('Error fetching data:', err);
     }
+  };
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('theme');
+      if (stored === 'light' || stored === 'dark') {
+        setTheme(stored);
+      }
+    } catch {
+      // ignore if localStorage is not available
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    setTheme((prev) => {
+      const next = prev === 'light' ? 'dark' : 'light';
+      try {
+        localStorage.setItem('theme', next);
+      } catch {
+        // ignore if localStorage is not available
+      }
+      return next;
+    });
   };
 
   useEffect(() => {
@@ -71,7 +95,7 @@ const App: React.FC = () => {
   return (
     <div className="App">
       {data ? (
-        <DashboardTailwind data={data} />
+        <DashboardTailwind data={data} theme={theme} onToggleTheme={toggleTheme} />
       ) : (
         <div className="loading-container">
           <p>No data available</p>
