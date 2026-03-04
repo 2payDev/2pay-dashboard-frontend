@@ -15,6 +15,7 @@ export interface DashboardData {
   today_turnover: number;
   turnover_till_date: number;
   transactions_mtd: number;
+  monthly_transaction_target: number;
   target_till_date: number;
   target_achievement_percentage: number;
   // Pace-to-target
@@ -39,6 +40,7 @@ const isDashboardData = (data: any): data is DashboardData => {
     'today_turnover',
     'turnover_till_date',
     'transactions_mtd',
+    'monthly_transaction_target',
     'target_till_date',
     'target_achievement_percentage',
   ];
