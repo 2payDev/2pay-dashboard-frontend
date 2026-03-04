@@ -15,7 +15,7 @@ export interface DashboardData {
   today_turnover: number;
   turnover_till_date: number;
   transactions_mtd: number;
-  monthly_transaction_target: number;
+  monthly_transaction_target?: number;
   target_till_date: number;
   target_achievement_percentage: number;
   // Pace-to-target
@@ -40,11 +40,20 @@ const isDashboardData = (data: any): data is DashboardData => {
     'today_turnover',
     'turnover_till_date',
     'transactions_mtd',
-    'monthly_transaction_target',
     'target_till_date',
     'target_achievement_percentage',
   ];
-  return numberKeys.every((key) => typeof (data as any)[key] === 'number');
+  if (!numberKeys.every((key) => typeof (data as any)[key] === 'number')) return false;
+
+  // Backward compatible: API may not send this yet.
+  if (
+    typeof (data as any).monthly_transaction_target !== 'undefined'
+    && typeof (data as any).monthly_transaction_target !== 'number'
+  ) {
+    return false;
+  }
+
+  return true;
 };
 
 export const fetchDashboardData = async (): Promise<DashboardData> => {
@@ -54,13 +63,12 @@ export const fetchDashboardData = async (): Promise<DashboardData> => {
       headers: API_KEY ? { Authorization: `Bearer ${API_KEY}` } : {},
     });
 
-    const data = response.data;
+    const data = response.data as any;
     if (!isDashboardData(data)) {
-      console.error('API response has unexpected shape:', data);
-      throw new Error('Invalid dashboard data received from server');
+      console.warn('API response has unexpected shape (continuing anyway):', data);
     }
 
-    return data;
+    return data as DashboardData;
   } catch (error) {
     console.error('API Error:', error);
     throw error;

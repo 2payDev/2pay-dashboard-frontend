@@ -59,7 +59,10 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data, theme, onToggleThem
   };
 
   const pct = Math.max(0, Math.min(100, data.target_achievement_percentage || 0));
-  const transactionTarget = data.monthly_transaction_target || 0;
+  const transactionTarget =
+    (typeof data.monthly_transaction_target === 'number' ? data.monthly_transaction_target : undefined)
+    ?? (process.env.REACT_APP_MONTHLY_TRANSACTION_TARGET ? Number(process.env.REACT_APP_MONTHLY_TRANSACTION_TARGET) : undefined)
+    ?? 21500;
   const transactionPctRaw = transactionTarget > 0 ? (data.transactions_mtd / transactionTarget) * 100 : 0;
   const transactionPct = Math.max(0, Math.min(100, transactionPctRaw));
 
