@@ -5,6 +5,7 @@ import LoginPage from './components/LoginPage';
 import { fetchDashboardData, DashboardData } from './services/api';
 import { isAuthenticated, logout } from './services/auth';
 import axios from 'axios';
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(isAuthenticated);
@@ -13,12 +14,15 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
     setIsLoggedIn(false);
     setData(null);
     if (intervalRef.current) clearInterval(intervalRef.current);
+    navigate('/login', { replace: true });
   };
 
   const loadData = async () => {
@@ -31,6 +35,7 @@ const App: React.FC = () => {
       if (axios.isAxiosError(err) && err.response?.status === 401) {
         logout();
         setIsLoggedIn(false);
+        navigate('/login', { replace: true });
         return;
       }
       setError('Failed to load dashboard data');
@@ -78,6 +83,13 @@ const App: React.FC = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedIn]);
 
+  useEffect(() => {
+    // If user manually visits /login while already logged in, send them to dashboard.
+    if (isLoggedIn && location.pathname === '/login') {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isLoggedIn, location.pathname, navigate]);
+
   // Force desktop layout (for LCD / TV screens) when ?layout=desktop or ?tv=1 is in URL
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -93,58 +105,73 @@ const App: React.FC = () => {
     }
   }, []);
 
-  if (!isLoggedIn) {
-    return <LoginPage onLoginSuccess={() => setIsLoggedIn(true)} />;
-  }
+  const RequireAuth: React.FC<{ children: React.ReactElement }> = ({ children }) => {
+    if (!isLoggedIn) {
+      return <Navigate to="/login" replace />;
+    }
+    return children;
+  };
 
-  if (loading && !data) {
+  const DashboardScreen = () => {
+    if (loading && !data) {
+      return (
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading dashboard data...</p>
+        </div>
+      );
+    }
+
+    if (error && !data) {
+      return (
+        <div className="error-container">
+          <h2>Error</h2>
+          <p>{error}</p>
+          <button onClick={loadData}>Retry</button>
+        </div>
+      );
+    }
+
     return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <p>Loading dashboard data...</p>
+      <div className="App" style={{ position: 'relative' }}>
+        {data ? (
+          <DashboardTailwind data={data} theme={theme} onToggleTheme={toggleTheme} onLogout={handleLogout} />
+        ) : (
+          <div className="loading-container">
+            <p>No data available</p>
+          </div>
+        )}
       </div>
     );
-  }
-
-  if (error && !data) {
-    return (
-      <div className="error-container">
-        <h2>Error</h2>
-        <p>{error}</p>
-        <button onClick={loadData}>Retry</button>
-      </div>
-    );
-  }
+  };
 
   return (
-    <div className="App" style={{ position: 'relative' }}>
-      <button
-        onClick={handleLogout}
-        style={{
-          position: 'fixed',
-          top: '12px',
-          right: '12px',
-          zIndex: 1000,
-          padding: '6px 14px',
-          background: '#146252',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '6px',
-          cursor: 'pointer',
-          fontSize: '13px',
-          fontWeight: 600,
-        }}
-      >
-        Logout
-      </button>
-      {data ? (
-        <DashboardTailwind data={data} theme={theme} onToggleTheme={toggleTheme} />
-      ) : (
-        <div className="loading-container">
-          <p>No data available</p>
-        </div>
-      )}
-    </div>
+    <Routes>
+      <Route
+        path="/"
+        element={<Navigate to={isLoggedIn ? '/dashboard' : '/login'} replace />}
+      />
+      <Route
+        path="/login"
+        element={
+          <LoginPage
+            onLoginSuccess={() => {
+              setIsLoggedIn(true);
+              navigate('/dashboard', { replace: true });
+            }}
+          />
+        }
+      />
+      <Route
+        path="/dashboard"
+        element={
+          <RequireAuth>
+            <DashboardScreen />
+          </RequireAuth>
+        }
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 };
 

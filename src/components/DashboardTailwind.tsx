@@ -5,9 +5,10 @@ interface DashboardProps {
   data: DashboardData;
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
+  onLogout: () => void;
 }
 
-const DashboardTailwind: React.FC<DashboardProps> = ({ data, theme, onToggleTheme }) => {
+const DashboardTailwind: React.FC<DashboardProps> = ({ data, theme, onToggleTheme, onLogout }) => {
   const formatCurrency = (amount: number): string =>
     new Intl.NumberFormat('en-PK', {
       style: 'currency',
@@ -269,6 +270,32 @@ const DashboardTailwind: React.FC<DashboardProps> = ({ data, theme, onToggleThem
                   strokeLinejoin="round"
                 />
               </svg>
+            </button>
+            <button
+              onClick={onLogout}
+              className={`relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-nav uppercase tracking-[0.18em] transition-all border ${
+                isDark
+                  ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-200 hover:bg-emerald-500/15'
+                  : 'bg-white/10 border-white/20 text-white/80 hover:bg-white/15'
+              }`}
+            >
+              <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M10 7V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6a2 2 0 0 1-2-2v-1"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M13 12H3m0 0 3-3m-3 3 3 3"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span>Logout</span>
             </button>
             <div className="hidden sm:flex items-center gap-1 text-[11px] font-nav text-white/50">
               <svg className="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none">
