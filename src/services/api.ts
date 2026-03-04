@@ -1,7 +1,7 @@
 import axios from 'axios';
+import { getToken } from './auth';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
-const API_KEY = process.env.REACT_APP_API_KEY || '';
 
 export interface TerminalStats {
   point: string;
@@ -58,9 +58,10 @@ const isDashboardData = (data: any): data is DashboardData => {
 
 export const fetchDashboardData = async (): Promise<DashboardData> => {
   try {
+    const token = getToken();
     const response = await axios.get<DashboardData>(`${API_BASE_URL}/api/dashboard`, {
       timeout: 8000,
-      headers: API_KEY ? { Authorization: `Bearer ${API_KEY}` } : {},
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
 
     const data = response.data as any;

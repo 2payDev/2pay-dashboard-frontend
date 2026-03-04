@@ -1,13 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import DashboardTailwind from './components/DashboardTailwind';
+import LoginPage from './components/LoginPage';
 import { fetchDashboardData, DashboardData } from './services/api';
+import { isAuthenticated, logout } from './services/auth';
+import axios from 'axios';
 
 const App: React.FC = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(isAuthenticated);
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const handleLogout = () => {
+    logout();
+    setIsLoggedIn(false);
+    setData(null);
+    if (intervalRef.current) clearInterval(intervalRef.current);
+  };
 
   const loadData = async () => {
     try {
@@ -16,6 +28,11 @@ const App: React.FC = () => {
       setData(dashboardData);
       setLoading(false);
     } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        logout();
+        setIsLoggedIn(false);
+        return;
+      }
       setError('Failed to load dashboard data');
       setLoading(false);
       console.error('Error fetching data:', err);
@@ -46,17 +63,20 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    // Load data immediately
+    if (!isLoggedIn) return;
+
+    setLoading(true);
     loadData();
 
-    // Set up auto-refresh every minute (60000 milliseconds)
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       loadData();
     }, 60000);
 
-    // Cleanup interval on component unmount
-    return () => clearInterval(interval);
-  }, []);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoggedIn]);
 
   // Force desktop layout (for LCD / TV screens) when ?layout=desktop or ?tv=1 is in URL
   useEffect(() => {
@@ -72,6 +92,10 @@ const App: React.FC = () => {
       document.body.classList.remove('force-desktop-layout');
     }
   }, []);
+
+  if (!isLoggedIn) {
+    return <LoginPage onLoginSuccess={() => setIsLoggedIn(true)} />;
+  }
 
   if (loading && !data) {
     return (
@@ -93,7 +117,26 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="App">
+    <div className="App" style={{ position: 'relative' }}>
+      <button
+        onClick={handleLogout}
+        style={{
+          position: 'fixed',
+          top: '12px',
+          right: '12px',
+          zIndex: 1000,
+          padding: '6px 14px',
+          background: '#146252',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '6px',
+          cursor: 'pointer',
+          fontSize: '13px',
+          fontWeight: 600,
+        }}
+      >
+        Logout
+      </button>
       {data ? (
         <DashboardTailwind data={data} theme={theme} onToggleTheme={toggleTheme} />
       ) : (
