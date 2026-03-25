@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import DashboardTailwind from './components/DashboardTailwind';
 import LoginPage from './components/LoginPage';
+import LoginPageLCD from './components/LoginPageLCD';
 import { fetchDashboardData, DashboardData } from './services/api';
 import { isAuthenticated, logout } from './services/auth';
 import axios from 'axios';
@@ -155,6 +156,17 @@ const App: React.FC = () => {
         path="/login"
         element={
           <LoginPage
+            onLoginSuccess={() => {
+              setIsLoggedIn(true);
+              navigate('/dashboard', { replace: true });
+            }}
+          />
+        }
+      />
+      <Route
+        path="/login-lcd"
+        element={
+          <LoginPageLCD
             onLoginSuccess={() => {
               setIsLoggedIn(true);
               navigate('/dashboard', { replace: true });

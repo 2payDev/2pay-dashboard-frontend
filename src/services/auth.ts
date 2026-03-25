@@ -15,6 +15,20 @@ export const login = async (username: string, password: string): Promise<void> =
   localStorage.setItem(TOKEN_KEY, access_token);
 };
 
+export const loginLcd = async (username: string, password: string): Promise<void> => {
+  const response = await fetch(`${API_BASE_URL}/api/auth/login/lcd`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password }),
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error((err as any).detail || 'Invalid credentials');
+  }
+  const { access_token } = await response.json();
+  localStorage.setItem(TOKEN_KEY, access_token);
+};
+
 export const logout = (): void => {
   localStorage.removeItem(TOKEN_KEY);
 };
